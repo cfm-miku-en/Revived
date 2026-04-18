@@ -17,6 +17,18 @@ extern FILE* g_LogFile;
 
 FILE* g_LogFile = NULL;
 
+bool IsOpenXRRuntimeInstalled()
+{
+	HKEY key;
+	LONG error = RegOpenKeyEx(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Khronos\\OpenXR\\1", 0, KEY_READ, &key);
+	if (error != ERROR_SUCCESS)
+		return false;
+	DWORD type, size = 0;
+	error = RegQueryValueEx(key, L"ActiveRuntime", nullptr, &type, nullptr, &size);
+	RegCloseKey(key);
+	return error == ERROR_SUCCESS && type == REG_SZ && size > 0;
+}
+
 bool GetOculusBasePath(PWCHAR path, DWORD length)
 {
 	LONG error = ERROR_SUCCESS;
@@ -247,14 +259,14 @@ int wmain(int argc, wchar_t *argv[]) {
 
 	if (dlls.empty())
 	{
-		if (vr::VR_IsRuntimeInstalled())
+		if (IsOpenXRRuntimeInstalled())
 		{
-			dlls.add(moduleDir + std::string("\\openvr_api64.dll"));
-			dlls.add(moduleDir + std::string("\\LibRevive64.dll"));
+			dlls.add(moduleDir + std::string("\\LibReviveXR64.dll"));
 		}
 		else
 		{
-			dlls.add(moduleDir + std::string("\\LibReviveXR64.dll"));
+			dlls.add(moduleDir + std::string("\\openvr_api64.dll"));
+			dlls.add(moduleDir + std::string("\\LibRevive64.dll"));
 		}
 	}
 	
