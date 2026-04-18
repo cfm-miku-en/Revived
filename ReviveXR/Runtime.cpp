@@ -36,6 +36,7 @@ Runtime::HackInfo Runtime::s_known_hacks[] = {
 	{ nullptr, "Windows Mixed Reality Runtime", HACK_WAIT_FOR_SESSION_READY, 0, 0, true },
 	{ "echovr.exe", nullptr, HACK_FORCE_FOV_FALLBACK, 0, 0, true },
 	{ "loneecho.exe", nullptr, HACK_FORCE_FOV_FALLBACK, 0, 0, true },
+	{ "loneecho2.exe", nullptr, HACK_FORCE_FOV_FALLBACK, 0, 0, true },
 };
 
 Runtime& Runtime::Get()
