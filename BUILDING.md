@@ -4,20 +4,7 @@ For your convenience, there is a script to help retrieve and set up
 dependencies in the project root. This script will also attempt to build OpenXR
 and Revive.
 
-Instructions for both scripted and manual build are below.
-
-## Script
-
-- Clone this repository:
-  ```
-  git clone git@github.com:LibreVR/Revive.git
-  ```
-- Install Visual Studio 2017, CMake, and Git, and ensure all three are in your PATH from within PowerShell.
-- Run the setup script (PowerShell):
-  ```
-  cd Revive
-  .\setup.ps1
-  ```
+Instructions for manual build are below.
 
 ## Manual
 
@@ -31,11 +18,12 @@ cd vcpkg
 bootstrap-vcpkg.bat
 ```
 
-Now that vcpkg has been installed we need to install the dependencies and integrate with VS2017
+Now that vcpkg has been installed we need to install the dependencies and integrate with Visual Studio 2019
 
 ```
-vcpkg install openxr-loader:x64-windows glfw3:x64-windows-static glfw3:x86-windows-static
-vcpkg integrate
+vcpkg install --triplet x86-windows-static detours openxr-loader glfw3
+vcpkg install --triplet x64-windows-static detours openxr-loader glfw3
+vcpkg integrate install
 ```
 
 Now we're ready to clone the Revive repository and set up vendored dependencies.
@@ -54,4 +42,4 @@ cd Revive/Externals
 unzip ovr_sdk_win_<version>.zip
 ```
 
-The Revive, ReviveXR and ReviveInjector projects can then build normally in VS2017.
+The Revive, ReviveXR and ReviveInjector projects can then build normally in Visual Studio 2019.
