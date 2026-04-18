@@ -18,6 +18,12 @@ if %errorlevel% equ 0 (
 	pause
 	exit
 )
-reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\%exe%" /v Debugger /t REG_SZ /d "%~dp0ReviveInjector.exe /debug"
+echo Choose runtime: OpenXR (newer, preferred for Quest 3 / modern SteamVR) or default OpenVR.
+set /p openxr="Use OpenXR runtime? (y/N): "
+if /i "%openxr%"=="y" (
+	reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\%exe%" /v Debugger /t REG_SZ /d "%~dp0ReviveInjector.exe /openxr /debug"
+) else (
+	reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\%exe%" /v Debugger /t REG_SZ /d "%~dp0ReviveInjector.exe /debug"
+)
 if %errorlevel% neq 0 echo Right-click this script and select "Run as administrator" to try again
 pause
