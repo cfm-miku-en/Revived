@@ -104,6 +104,7 @@ function generateManifest(manifest, library) {
 }
 
 function heartbeat(appId) {
+    return;
     if (Platform.AccessToken.length > 0) {
         var xhr = new XMLHttpRequest;
         xhr.onreadystatechange = function () {
