@@ -2,6 +2,13 @@
 !define SRC_DIR "..\Revive"
 !define DASH_DIR "..\ReviveOverlay"
 
+Var InstallChoice
+Var Dialog
+Var RadioRevived
+Var RadioRevive
+Var RadioCustom
+Var CustomPathText
+
 Function .onInit
 !ifdef NIGHTLY
     MessageBox MB_YESNO "Looks like you downloaded a beta release, these releases are unstable and only intended for experimentation.$\r$\n$\r$\nDo you want to install a stable release instead?" IDYES nightly_abort IDNO nightly_continue
@@ -11,20 +18,15 @@ Function .onInit
     nightly_continue:
 !endif
     StrCpy $INSTDIR "$PROGRAMFILES64\Revived"
-    ReadRegStr $R0 HKLM "Software\Revive" ""
-    StrCmp $R0 "" check_exe
-    StrCpy $INSTDIR "$R0"
-    Goto init_done
-    check_exe:
-    IfFileExists "$PROGRAMFILES64\Revive\ReviveInjector.exe" 0 init_done
-    StrCpy $INSTDIR "$PROGRAMFILES64\Revive"
-    init_done:
+    StrCpy $InstallChoice "revived"
 FunctionEnd
 
 ;--------------------------------
 ;Include Modern UI
 
   !include "MUI2.nsh"
+  !include "nsDialogs.nsh"
+  !include "LogicLib.nsh"
 
 ;--------------------------------
 ;General
@@ -53,13 +55,14 @@ FunctionEnd
 ;Pages
 
   !insertmacro MUI_PAGE_LICENSE "..\LICENSE"
-  !define MUI_DIRECTORYPAGE_TEXT_TOP "To upgrade an existing Revive installation, choose your current install folder — this preserves hook.cmd registrations and app paths."
-  !insertmacro MUI_PAGE_DIRECTORY
+  
+  Page custom InstallChoicePage InstallChoicePageLeave
   
   ;Start Menu Folder Page Configuration
   !define MUI_STARTMENUPAGE_REGISTRY_ROOT "HKCU" 
-  !define MUI_STARTMENUPAGE_REGISTRY_KEY "Software\Revive" 
+  !define MUI_STARTMENUPAGE_REGISTRY_KEY "Software\Revived"
   !define MUI_STARTMENUPAGE_REGISTRY_VALUENAME "Start Menu Folder"
+  !define MUI_STARTMENUPAGE_DEFAULTFOLDER "Revived"
   
   !insertmacro MUI_PAGE_STARTMENU Application $StartMenuFolder
   
@@ -74,10 +77,79 @@ FunctionEnd
   !insertmacro MUI_LANGUAGE "English"
 
 ;--------------------------------
+;Custom install-location page
+
+Function InstallChoicePage
+  !insertmacro MUI_HEADER_TEXT "Choose Install Location" "Choose where to install Revived."
+  
+  nsDialogs::Create 1018
+  Pop $Dialog
+  ${If} $Dialog == error
+    Abort
+  ${EndIf}
+  
+  ${NSD_CreateLabel} 0 0 100% 24u "Select an install option:"
+  Pop $0
+  
+  ${NSD_CreateRadioButton} 0 30u 100% 12u "Revived (fresh install to $PROGRAMFILES64\Revived)"
+  Pop $RadioRevived
+  
+  ${NSD_CreateRadioButton} 0 46u 100% 12u "Revive (upgrade existing install; keeps hook.cmd registrations and app paths)"
+  Pop $RadioRevive
+  
+  ${NSD_CreateRadioButton} 0 62u 100% 12u "Custom location"
+  Pop $RadioCustom
+  
+  ${NSD_CreateText} 10u 78u 70% 12u "$PROGRAMFILES64\Revived"
+  Pop $CustomPathText
+  
+  ${If} $InstallChoice == "revive"
+    ${NSD_Check} $RadioRevive
+  ${ElseIf} $InstallChoice == "custom"
+    ${NSD_Check} $RadioCustom
+  ${Else}
+    ${NSD_Check} $RadioRevived
+  ${EndIf}
+  
+  nsDialogs::Show
+FunctionEnd
+
+Function InstallChoicePageLeave
+  ${NSD_GetState} $RadioRevived $0
+  ${If} $0 == ${BST_CHECKED}
+    StrCpy $InstallChoice "revived"
+    StrCpy $INSTDIR "$PROGRAMFILES64\Revived"
+    Return
+  ${EndIf}
+  
+  ${NSD_GetState} $RadioRevive $0
+  ${If} $0 == ${BST_CHECKED}
+    StrCpy $InstallChoice "revive"
+    ReadRegStr $R0 HKLM "Software\Revive" ""
+    ${If} $R0 != ""
+      StrCpy $INSTDIR "$R0"
+    ${Else}
+      StrCpy $INSTDIR "$PROGRAMFILES64\Revive"
+    ${EndIf}
+    Return
+  ${EndIf}
+  
+  ${NSD_GetState} $RadioCustom $0
+  ${If} $0 == ${BST_CHECKED}
+    StrCpy $InstallChoice "custom"
+    ${NSD_GetText} $CustomPathText $INSTDIR
+    ${If} $INSTDIR == ""
+      MessageBox MB_OK "Please enter a custom install path."
+      Abort
+    ${EndIf}
+  ${EndIf}
+FunctionEnd
+
+;--------------------------------
 ;Installer Sections
 
 Section "Revive" SecRevive
-  DetailPrint "Based on LibreVR/Revive by CrossVR and contributors — https://github.com/LibreVR/Revive"
+  DetailPrint "Based on LibreVR/Revive by CrossVR and contributors - https://github.com/LibreVR/Revive"
 IfSilent install
   DetailPrint "Terminating dashboard overlay..."
   nsExec::ExecToLog '"taskkill" /F /IM ReviveOverlay.exe'
@@ -159,6 +231,11 @@ install:
                    "DisplayIcon" "$INSTDIR\ReviveOverlay.exe,0"
   
   !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
+    
+    ; Use "Revive" for upgrade choice, "Revived" otherwise
+    ${If} $InstallChoice == "revive"
+      StrCpy $StartMenuFolder "Revive"
+    ${EndIf}
     
     ;Create shortcuts
     CreateDirectory "$SMPROGRAMS\$StartMenuFolder"
