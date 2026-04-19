@@ -228,21 +228,33 @@ int wmain(int argc, wchar_t *argv[]) {
 
 	std::wstring oculusVer = RegReadSZ(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Oculus VR, LLC\\Oculus", L"Version", KEY_READ | KEY_WOW64_32KEY);
 	if (oculusVer.empty())
-		LOG("Env: Oculus PC version = not installed\n");
-	else
-		LOG("Env: Oculus PC version = %ls\n", oculusVer.c_str());
-
-	if (vr::VR_IsRuntimeInstalled())
-		LOG("Env: SteamVR = installed, runtime path = %s\n", vr::VR_RuntimePath());
-	else
-		LOG("Env: SteamVR = not installed\n");
-
-	std::wstring xrRuntime = RegReadSZ(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Khronos\\OpenXR\\1", L"ActiveRuntime");
-	if (xrRuntime.empty())
-		LOG("Env: OpenXR runtime = not installed\n");
-	else
-		LOG("Env: OpenXR runtime = %ls\n", xrRuntime.c_str());
-
+    {
+        LOG("Env: Oculus PC version = not installed\n");
+    }
+    else
+    {
+        LOG("Env: Oculus PC version = %ls\n", oculusVer.c_str());
+    }
+    if (vr::VR_IsRuntimeInstalled())
+    {
+        char steamvrPath[MAX_PATH] = {};
+        uint32_t pathLen = 0;
+        vr::VR_GetRuntimePath(steamvrPath, MAX_PATH, &pathLen);
+        LOG("Env: SteamVR = installed, runtime path = %s\n", steamvrPath);
+    }
+    else
+    {
+        LOG("Env: SteamVR = not installed\n");
+    }
+    std::wstring xrRuntime = RegReadSZ(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Khronos\\OpenXR\\1", L"ActiveRuntime");
+    if (xrRuntime.empty())
+    {
+        LOG("Env: OpenXR runtime = not installed\n");
+    }
+    else
+    {
+        LOG("Env: OpenXR runtime = %ls\n", xrRuntime.c_str());
+    }
 	char moduleDir[MAX_PATH];
 	GetModuleFileNameA(NULL, moduleDir, MAX_PATH);
 	PathRemoveFileSpecA(moduleDir);
