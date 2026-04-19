@@ -9,6 +9,7 @@
 #include <Shlwapi.h>
 #include <openvr.h>
 #include <detours/detours.h>
+#include "../ReviveOverlay/version.h"
 
 extern FILE* g_LogFile;
 #define LOG(x, ...) if (g_LogFile) fprintf(g_LogFile, x, __VA_ARGS__); \
@@ -150,6 +151,22 @@ bool GetDefaultLibraryPath(PWCHAR path, DWORD length)
 	return true;
 }
 
+static std::wstring RegReadSZ(HKEY root, LPCWSTR subkey, LPCWSTR value, DWORD flags = KEY_READ)
+{
+	HKEY key;
+	if (RegOpenKeyExW(root, subkey, 0, flags, &key) != ERROR_SUCCESS)
+		return L"";
+	DWORD size = 0;
+	RegQueryValueExW(key, value, nullptr, nullptr, nullptr, &size);
+	if (!size) { RegCloseKey(key); return L""; }
+	std::wstring result(size / sizeof(wchar_t), L'\0');
+	RegQueryValueExW(key, value, nullptr, nullptr, (PBYTE)result.data(), &size);
+	RegCloseKey(key);
+	while (!result.empty() && result.back() == L'\0')
+		result.pop_back();
+	return result;
+}
+
 class StringArray
 {
 public:
@@ -206,6 +223,25 @@ int wmain(int argc, wchar_t *argv[]) {
 	}
 
 	LOG("Launched injector with: %ls\n", GetCommandLine());
+
+	LOG("Env: Revive version = " REV_VERSION_STRING "\n");
+
+	std::wstring oculusVer = RegReadSZ(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Oculus VR, LLC\\Oculus", L"Version", KEY_READ | KEY_WOW64_32KEY);
+	if (oculusVer.empty())
+		LOG("Env: Oculus PC version = not installed\n");
+	else
+		LOG("Env: Oculus PC version = %ls\n", oculusVer.c_str());
+
+	if (vr::VR_IsRuntimeInstalled())
+		LOG("Env: SteamVR = installed, runtime path = %s\n", vr::VR_RuntimePath());
+	else
+		LOG("Env: SteamVR = not installed\n");
+
+	std::wstring xrRuntime = RegReadSZ(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Khronos\\OpenXR\\1", L"ActiveRuntime");
+	if (xrRuntime.empty())
+		LOG("Env: OpenXR runtime = not installed\n");
+	else
+		LOG("Env: OpenXR runtime = %ls\n", xrRuntime.c_str());
 
 	char moduleDir[MAX_PATH];
 	GetModuleFileNameA(NULL, moduleDir, MAX_PATH);
