@@ -52,7 +52,7 @@ bool CTrayIconController::Init()
 	m_trayIconMenu.addAction("&Help", this, SLOT(showHelp()));
 	m_trayIconMenu.addAction("&Quit", this, SLOT(quit()));
 	m_trayIcon->setContextMenu(&m_trayIconMenu);
-	m_trayIcon->setToolTip("Revive Dashboard");
+	m_trayIcon->setToolTip("Revived Dashboard");
 
 	connect(m_trayIcon.get(), &QSystemTrayIcon::messageClicked, this, &CTrayIconController::messageClicked);
 	connect(m_trayIcon.get(), &QSystemTrayIcon::activated, this, &CTrayIconController::activated);
@@ -70,23 +70,23 @@ void CTrayIconController::ShowInformation(ETrayInfo info)
 	switch (info)
 	{
 		case TrayInfo_AutoLaunchEnabled:
-			m_trayIcon->showMessage("Revive succesfully installed",
-								   "Revive will automatically add Oculus Store games to your library while SteamVR is running.",
+			m_trayIcon->showMessage("Revived succesfully installed",
+								   "Revived will automatically add Oculus Store games to your library while SteamVR is running.",
 								   QSystemTrayIcon::Information);
 		break;
 		case TrayInfo_AutoLaunchFailed:
-			m_trayIcon->showMessage("Revive did not start correctly",
-								   "Unable to set the auto-launch flag, please report this to the Revive issue tracker.",
+			m_trayIcon->showMessage("Revived did not start correctly",
+								   "Unable to set the auto-launch flag, please report this to the Revived issue tracker.",
 								   QSystemTrayIcon::Critical);
 		break;
 		case TrayInfo_OculusLibraryNotFound:
-			m_trayIcon->showMessage("Revive did not start correctly",
+			m_trayIcon->showMessage("Revived did not start correctly",
 								   "No Oculus Library was found, click here to install the Oculus Software from oculus.com/setup.",
 								   QSystemTrayIcon::Warning);
 		break;
 		case TrayInfo_OculusAccessTokenNotFound:
 			m_trayIcon->showMessage("Unable to load Oculus OAuth token",
-								   "Multiplayer may have issues! Sign out & back in to the Oculus app, then reboot your PC or restart Revive & OVRService.",
+								   "Multiplayer may have issues! Sign out & back in to the Oculus app, then reboot your PC or restart Revived & OVRService.",
 								   QSystemTrayIcon::Warning);
 		break;
 	}
@@ -127,13 +127,13 @@ void CTrayIconController::shortcut()
 		return;
 
 	m_trayIcon->showMessage("Shortcut created on desktop",
-						   "You can use this shortcut to launch the executable with Revive directly.",
+						   "You can use this shortcut to launch the executable with Revived directly.",
 						   QSystemTrayIcon::Information);
 }
 
 void CTrayIconController::showHelp()
 {
-	QDesktopServices::openUrl(QUrl("https://github.com/LibreVR/Revive/wiki"));
+	QDesktopServices::openUrl(QUrl("https://github.com/cfm-miku-en/Revived/wiki"));
 }
 
 void CTrayIconController::messageClicked()
@@ -144,7 +144,7 @@ void CTrayIconController::messageClicked()
 			show();
 		break;
 		case TrayInfo_AutoLaunchFailed:
-			QDesktopServices::openUrl(QUrl("https://github.com/LibreVR/Revive/issues"));
+			QDesktopServices::openUrl(QUrl("https://github.com/cfm-miku-en/Revived/issues"));
 		break;
 		case TrayInfo_OculusLibraryNotFound:
 			QDesktopServices::openUrl(QUrl("https://oculus.com/setup"));
@@ -155,7 +155,7 @@ void CTrayIconController::messageClicked()
 QString CTrayIconController::openDialog()
 {
 	return QFileDialog::getOpenFileName(
-				nullptr, "Revive",
+				nullptr, "Revived",
 				QStandardPaths::writableLocation(QStandardPaths::DesktopLocation),
 				"Application (*.exe)");
 }

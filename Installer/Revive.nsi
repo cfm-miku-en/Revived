@@ -2,15 +2,24 @@
 !define SRC_DIR "..\Revive"
 !define DASH_DIR "..\ReviveOverlay"
 
-!ifdef NIGHTLY
 Function .onInit
-    MessageBox MB_YESNO "Looks like you downloaded a beta release, these releases are unstable and only intended for experimentation.$\r$\n$\r$\nDo you want to install a stable release instead?" IDYES abort IDNO continue
-    abort:
-    ExecShell "open" "https://github.com/LibreVR/Revive/releases/latest"
+!ifdef NIGHTLY
+    MessageBox MB_YESNO "Looks like you downloaded a beta release, these releases are unstable and only intended for experimentation.$\r$\n$\r$\nDo you want to install a stable release instead?" IDYES nightly_abort IDNO nightly_continue
+    nightly_abort:
+    ExecShell "open" "https://github.com/cfm-miku-en/Revived/releases/latest"
     Abort
-    continue:
-FunctionEnd
+    nightly_continue:
 !endif
+    StrCpy $INSTDIR "$PROGRAMFILES64\Revived"
+    ReadRegStr $R0 HKLM "Software\Revive" ""
+    StrCmp $R0 "" check_exe
+    StrCpy $INSTDIR "$R0"
+    Goto init_done
+    check_exe:
+    IfFileExists "$PROGRAMFILES64\Revive\ReviveInjector.exe" 0 init_done
+    StrCpy $INSTDIR "$PROGRAMFILES64\Revive"
+    init_done:
+FunctionEnd
 
 ;--------------------------------
 ;Include Modern UI
@@ -21,14 +30,11 @@ FunctionEnd
 ;General
 
   ;Name and file
-  Name "Revive"
-  OutFile "ReviveInstaller.exe"
+  Name "Revived"
+  OutFile "RevivedInstaller.exe"
 
   ;Default installation folder
-  InstallDir "$PROGRAMFILES64\Revive"
-  
-  ;Get installation folder from registry if available
-  InstallDirRegKey HKCU "Software\Revive" ""
+  InstallDir "$PROGRAMFILES64\Revived"
 
   ;Request application privileges for Windows Vista
   RequestExecutionLevel admin
@@ -47,6 +53,7 @@ FunctionEnd
 ;Pages
 
   !insertmacro MUI_PAGE_LICENSE "..\LICENSE"
+  !define MUI_DIRECTORYPAGE_TEXT_TOP "To upgrade an existing Revive installation, choose your current install folder — this preserves hook.cmd registrations and app paths."
   !insertmacro MUI_PAGE_DIRECTORY
   
   ;Start Menu Folder Page Configuration
@@ -70,6 +77,7 @@ FunctionEnd
 ;Installer Sections
 
 Section "Revive" SecRevive
+  DetailPrint "Based on LibreVR/Revive by CrossVR and contributors — https://github.com/LibreVR/Revive"
 IfSilent install
   DetailPrint "Terminating dashboard overlay..."
   nsExec::ExecToLog '"taskkill" /F /IM ReviveOverlay.exe'
@@ -81,7 +89,7 @@ install:
   ; If the directory already exists, use a subfolder
   IfFileExists $INSTDIR\ReviveOverlay.exe +3 0
   IfFileExists $INSTDIR\*.* 0 +2
-  StrCpy $INSTDIR "$INSTDIR\Revive"
+  StrCpy $INSTDIR "$INSTDIR\Revived"
   
   SetOutPath "$INSTDIR"
   
@@ -144,7 +152,7 @@ install:
   
   ; Add uninstaller to Programs and Features
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Revive" \
-                   "DisplayName" "Revive Dashboard"
+                   "DisplayName" "Revived Dashboard"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Revive" \
                    "UninstallString" "$\"$INSTDIR\Uninstall.exe$\""
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Revive" \
@@ -155,7 +163,7 @@ install:
     ;Create shortcuts
     CreateDirectory "$SMPROGRAMS\$StartMenuFolder"
     CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
-    CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Revive Dashboard.lnk" "$INSTDIR\ReviveOverlay.exe"
+    CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Revived Dashboard.lnk" "$INSTDIR\ReviveOverlay.exe"
   
   !insertmacro MUI_STARTMENU_WRITE_END
 
@@ -180,7 +188,7 @@ Section "Uninstall"
   !insertmacro MUI_STARTMENU_GETFOLDER Application $StartMenuFolder
     
   Delete "$SMPROGRAMS\$StartMenuFolder\Uninstall.lnk"
-  Delete "$SMPROGRAMS\$StartMenuFolder\Revive Dashboard.lnk"
+  Delete "$SMPROGRAMS\$StartMenuFolder\Revived Dashboard.lnk"
   RMDir "$SMPROGRAMS\$StartMenuFolder"
   
   DeleteRegKey HKLM "Software\Revive"
