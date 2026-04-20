@@ -14,6 +14,7 @@
 #include <QDir>
 #include <QFile>
 #include <QTextStream>
+#include <QSettings>
 #include <QStandardPaths>
 #include <QSslSocket>
 #include <QSurfaceFormat>
@@ -24,6 +25,14 @@ extern "C" {
 }
 
 QFile* g_LogFile = nullptr;
+
+static QString dataFolderName()
+{
+	QSettings reg(QStringLiteral("HKEY_CURRENT_USER\\Software\\Revived"), QSettings::NativeFormat);
+	if (reg.value(QStringLiteral("DataFolder")).toString() == QStringLiteral("Revived"))
+		return QStringLiteral("Revived");
+	return QStringLiteral("Revive");
+}
 
 void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
@@ -46,7 +55,7 @@ int main(int argc, char *argv[])
 	QApplication a(argc, argv);
 
 	// Open the log file and install our handler.
-	QString logPath = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/Revive/";
+	QString logPath = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/" + dataFolderName() + "/";
 	if (QDir().mkpath(logPath)) {
 		g_LogFile = new QFile(logPath + "ReviveOverlay.txt");
 		g_LogFile->open(QIODevice::WriteOnly | QIODevice::Truncate);
