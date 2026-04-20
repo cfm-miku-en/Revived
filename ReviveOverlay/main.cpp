@@ -16,6 +16,7 @@
 #include <QTextStream>
 #include <QStandardPaths>
 #include <QSslSocket>
+#include <QSurfaceFormat>
 
 extern "C" {
 	__declspec(dllexport) DWORD NvOptimusEnablement = 0x00000001;
@@ -39,6 +40,9 @@ void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QS
 
 int main(int argc, char *argv[])
 {
+	QSurfaceFormat fmt;
+	fmt.setSamples(0);
+	QSurfaceFormat::setDefaultFormat(fmt);
 	QApplication a(argc, argv);
 
 	// Open the log file and install our handler.
