@@ -12,6 +12,7 @@
 #include <openvr.h>
 #include <detours/detours.h>
 #include "../ReviveOverlay/version.h"
+#include "../ReviveOverlay/revivesettings.h"
 
 extern FILE* g_LogFile;
 #define LOG(x, ...) if (g_LogFile) fprintf(g_LogFile, x, __VA_ARGS__); \
@@ -318,6 +319,9 @@ int wmain(int argc, wchar_t *argv[]) {
 	GetModuleFileNameA(NULL, moduleDir, MAX_PATH);
 	PathRemoveFileSpecA(moduleDir);
 
+	std::wstring runtimePref = RegReadSZ(HKEY_CURRENT_USER, REV_SETTINGS_SUBKEY, REV_SETTING_RUNTIME);
+	bool preferOpenXR = (runtimePref == REV_RUNTIME_OPENXR);
+
 	bool debug = false;
 	StringArray dlls;
 	std::string appKey;
@@ -373,7 +377,8 @@ int wmain(int argc, wchar_t *argv[]) {
 
 	if (dlls.empty())
 	{
-		if (IsOpenXRRuntimeInstalled())
+		bool useXR = runtimePref.empty() ? IsOpenXRRuntimeInstalled() : preferOpenXR;
+		if (useXR)
 		{
 			dlls.add(moduleDir + std::string("\\LibReviveXR64.dll"));
 		}

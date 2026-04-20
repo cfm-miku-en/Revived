@@ -1,6 +1,7 @@
 #include "trayiconcontroller.h"
 #include "openvroverlaycontroller.h"
 #include "revivemanifestcontroller.h"
+#include "settingscontroller.h"
 #include "windowsservices.h"
 #include "oculusoauthtokencontroller.h"
 #include <qt_windows.h>
@@ -96,11 +97,22 @@ int main(int argc, char *argv[])
 	if (!COculusOauthTokenController::SharedInstance()->Init())
 		qDebug("Failed to initialize the Oculus OAuth token");
 
+	// Apply persisted runtime preference
+	CReviveManifestController::SharedInstance()->UseOpenXR(
+		CSettingsController::SharedInstance()->runtimePreference() == CSettingsController::OpenXR
+	);
+	QObject::connect(CSettingsController::SharedInstance(), &CSettingsController::settingsChanged, []() {
+		CReviveManifestController::SharedInstance()->UseOpenXR(
+			CSettingsController::SharedInstance()->runtimePreference() == CSettingsController::OpenXR
+		);
+	});
+
 	// Create a QML engine.
 	QQmlEngine qmlEngine;
 	qmlEngine.rootContext()->setContextProperty("Revive", CReviveManifestController::SharedInstance());
 	qmlEngine.rootContext()->setContextProperty("OpenVR", COpenVROverlayController::SharedInstance());
 	qmlEngine.rootContext()->setContextProperty("Platform", COculusOauthTokenController::SharedInstance());
+	qmlEngine.rootContext()->setContextProperty("Settings", CSettingsController::SharedInstance());
 
 	QQmlComponent qmlComponent( &qmlEngine, QUrl("qrc:/Overlay.qml"));
 	if (qmlComponent.isError())

@@ -244,26 +244,49 @@ bool CReviveManifestController::Init()
 		CTrayIconController::SharedInstance()->ShowInformation(TrayInfo_AutoLaunchFailed);
 
 	// Get the base path
-	wchar_t path[MAX_PATH];
-	if (GetOculusBasePath(path, MAX_PATH))
-	{
-		QString base = QString::fromWCharArray(path);
-		if (!base.endsWith('\\'))
-			base.append('\\');
-		qDebug("Oculus Base found: %s", qUtf8Printable(base));
+	QSettings revSettings(QStringLiteral("HKEY_CURRENT_USER\\Software\\Revived"), QSettings::NativeFormat);
+	QString baseOverride = revSettings.value(QStringLiteral("MetaHorizonPath")).toString();
+	QString basePath;
+	if (!baseOverride.isEmpty()) {
+		if (QDir(baseOverride).exists()) {
+			basePath = baseOverride;
+		} else {
+			qWarning("Configured MetaHorizonPath does not exist, falling back to auto-detection");
+		}
+	}
+	if (basePath.isEmpty()) {
+		wchar_t path[MAX_PATH];
+		if (GetOculusBasePath(path, MAX_PATH))
+			basePath = QString::fromWCharArray(path);
+	}
+	if (!basePath.isEmpty()) {
+		if (!basePath.endsWith('\\') && !basePath.endsWith('/'))
+			basePath.append('\\');
+		qDebug("Oculus Base found: %s", qUtf8Printable(basePath));
 
-		m_strBaseURL = QUrl::fromLocalFile(base).url();
-		m_strBasePath = QDir::fromNativeSeparators(base);
+		m_strBaseURL = QUrl::fromLocalFile(basePath).url();
+		m_strBasePath = QDir::fromNativeSeparators(basePath);
 		emit BaseChanged();
 	}
 
 	// Get the library path
+	QString libraryOverride = revSettings.value(QStringLiteral("GamesLibraryPath")).toString();
 	QStringList path_array;
-	if (GetLibraries(m_lstLibraries, path_array))
+	if (!libraryOverride.isEmpty()) {
+		if (QDir(libraryOverride).exists()) {
+			path_array << libraryOverride;
+		} else {
+			qWarning("Configured GamesLibraryPath does not exist, falling back to auto-detection");
+		}
+	}
+	if (path_array.isEmpty())
+		GetLibraries(m_lstLibraries, path_array);
+
+	if (!path_array.isEmpty())
 	{
 		for (int i = 0; i < path_array.size(); ++i) {
 			QString library = path_array.at(i);
-			if (!library.endsWith('\\'))
+			if (!library.endsWith('\\') && !library.endsWith('/'))
 				library.append('\\');
 			qDebug("Oculus Library found: %s", qUtf8Printable(library));
 
