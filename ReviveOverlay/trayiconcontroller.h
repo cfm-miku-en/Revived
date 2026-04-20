@@ -13,6 +13,9 @@ enum ETrayInfo
 	TrayInfo_AutoLaunchEnabled,
 	TrayInfo_AutoLaunchFailed,
 	TrayInfo_OculusAccessTokenNotFound,
+	TrayInfo_UpdateAvailable,
+	TrayInfo_UpToDate,
+	TrayInfo_UpdateCheckFailed,
 };
 
 class CTrayIconController : public QObject
@@ -39,6 +42,11 @@ protected slots:
 	void shortcut();
 	void show();
 	void showHelp();
+	void checkForUpdates();
+	void onUpdateAvailable(const QString &version, const QString &url);
+	void onUpToDate();
+	void onUpdateCheckFailed(const QString &reason);
+	void openUpdatePage();
 	void messageClicked();
 	void activated(QSystemTrayIcon::ActivationReason reason);
 
@@ -46,6 +54,9 @@ private:
 	std::unique_ptr<QSystemTrayIcon> m_trayIcon;
 	QMenu m_trayIconMenu;
 	ETrayInfo m_LastInfo;
+	QAction *m_updateAvailableAction;
+	QString m_updateUrl;
+	bool m_manualCheck;
 
 	QString openDialog();
 };

@@ -1,6 +1,7 @@
 #include "trayiconcontroller.h"
 #include "openvroverlaycontroller.h"
 #include "revivemanifestcontroller.h"
+#include "updatechecker.h"
 #include "windowsservices.h"
 #include "oculusoauthtokencontroller.h"
 
@@ -31,6 +32,8 @@ CTrayIconController::CTrayIconController()
 	, m_trayIcon()
 	, m_trayIconMenu()
 	, m_LastInfo()
+	, m_updateAvailableAction(nullptr)
+	, m_manualCheck(false)
 {
 }
 
@@ -41,6 +44,13 @@ CTrayIconController::~CTrayIconController()
 bool CTrayIconController::Init()
 {
 	m_trayIcon = std::make_unique<QSystemTrayIcon>(QIcon(":/revive_white.ico"));
+
+	m_updateAvailableAction = m_trayIconMenu.addAction(QString());
+	m_updateAvailableAction->setVisible(false);
+	QObject::connect(m_updateAvailableAction, &QAction::triggered, this, &CTrayIconController::openUpdatePage);
+
+	m_trayIconMenu.addAction("Check for updates", this, SLOT(checkForUpdates()));
+
 	QAction* action = m_trayIconMenu.addAction("Use OpenXR runtime");
 	action->setCheckable(true);
 	QObject::connect(action, SIGNAL(triggered(bool)), this, SLOT(openxr(bool)));
@@ -56,6 +66,13 @@ bool CTrayIconController::Init()
 
 	connect(m_trayIcon.get(), &QSystemTrayIcon::messageClicked, this, &CTrayIconController::messageClicked);
 	connect(m_trayIcon.get(), &QSystemTrayIcon::activated, this, &CTrayIconController::activated);
+
+	QObject::connect(CUpdateChecker::SharedInstance(), &CUpdateChecker::updateAvailable,
+	                 this, &CTrayIconController::onUpdateAvailable);
+	QObject::connect(CUpdateChecker::SharedInstance(), &CUpdateChecker::upToDate,
+	                 this, &CTrayIconController::onUpToDate);
+	QObject::connect(CUpdateChecker::SharedInstance(), &CUpdateChecker::updateCheckFailed,
+	                 this, &CTrayIconController::onUpdateCheckFailed);
 
 	m_trayIcon->show();
 	return true;
@@ -149,7 +166,54 @@ void CTrayIconController::messageClicked()
 		case TrayInfo_OculusLibraryNotFound:
 			QDesktopServices::openUrl(QUrl("https://oculus.com/setup"));
 		break;
+		case TrayInfo_UpdateAvailable:
+			openUpdatePage();
+		break;
+		default:
+		break;
 	}
+}
+
+void CTrayIconController::checkForUpdates()
+{
+	m_manualCheck = true;
+	CUpdateChecker::SharedInstance()->checkForUpdate();
+}
+
+void CTrayIconController::onUpdateAvailable(const QString &version, const QString &url)
+{
+	m_updateUrl = url;
+	m_updateAvailableAction->setText("Update available (" + version + ")");
+	m_updateAvailableAction->setVisible(true);
+	m_LastInfo = TrayInfo_UpdateAvailable;
+	m_manualCheck = false;
+	m_trayIcon->showMessage("Update available",
+	                        "Version " + version + " is available. Click here to open the release page.",
+	                        QSystemTrayIcon::Information);
+}
+
+void CTrayIconController::onUpToDate()
+{
+	if (!m_manualCheck)
+		return;
+	m_LastInfo = TrayInfo_UpToDate;
+	m_manualCheck = false;
+	m_trayIcon->showMessage("Revived", "Up to date.", QSystemTrayIcon::Information);
+}
+
+void CTrayIconController::onUpdateCheckFailed(const QString &reason)
+{
+	if (!m_manualCheck)
+		return;
+	m_LastInfo = TrayInfo_UpdateCheckFailed;
+	m_manualCheck = false;
+	m_trayIcon->showMessage("Revived", "Update check failed: " + reason, QSystemTrayIcon::Warning);
+}
+
+void CTrayIconController::openUpdatePage()
+{
+	if (!m_updateUrl.isEmpty())
+		QDesktopServices::openUrl(QUrl(m_updateUrl));
 }
 
 QString CTrayIconController::openDialog()

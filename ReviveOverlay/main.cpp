@@ -2,6 +2,7 @@
 #include "openvroverlaycontroller.h"
 #include "revivemanifestcontroller.h"
 #include "settingscontroller.h"
+#include "updatechecker.h"
 #include "windowsservices.h"
 #include "oculusoauthtokencontroller.h"
 #include <qt_windows.h>
@@ -19,6 +20,7 @@
 #include <QStandardPaths>
 #include <QSslSocket>
 #include <QSurfaceFormat>
+#include <QTimer>
 
 extern "C" {
 	__declspec(dllexport) DWORD NvOptimusEnablement = 0x00000001;
@@ -125,6 +127,8 @@ int main(int argc, char *argv[])
 	QQuickItem *rootItem = qobject_cast<QQuickItem*>( rootObject );
 
 	COpenVROverlayController::SharedInstance()->SetQuickItem( rootItem );
+
+	QTimer::singleShot(30000, CUpdateChecker::SharedInstance(), &CUpdateChecker::checkForUpdate);
 
 	QObject::connect(&a, &QApplication::aboutToQuit, CTrayIconController::SharedInstance(), &CTrayIconController::quit);
 	return a.exec();
