@@ -228,14 +228,14 @@ int wmain(int argc, wchar_t *argv[]) {
 
 	LOG("Env: Revive version = " REV_VERSION_STRING "\n");
 
-	std::wstring oculusVer = RegReadSZ(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Oculus VR, LLC\\Oculus", L"Version", KEY_READ | KEY_WOW64_32KEY);
+	std::wstring oculusVer = RegReadSZ(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Oculus VR, LLC\\Oculus", L"DriverVersion", KEY_READ | KEY_WOW64_32KEY);
 	if (oculusVer.empty())
     {
-        LOG("Env: Meta Horizon version = not installed\n");
+        LOG("Env: Meta Horizon driver = unknown\n");
     }
     else
     {
-        LOG("Env: Meta Horizon version = %ls\n", oculusVer.c_str());
+        LOG("Env: Meta Horizon driver = %ls\n", oculusVer.c_str());
     }
     if (vr::VR_IsRuntimeInstalled())
     {
