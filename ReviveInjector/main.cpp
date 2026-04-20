@@ -237,10 +237,15 @@ int wmain(int argc, wchar_t *argv[]) {
 		return -1;
 	}
 
+	std::wstring dataFolder = RegReadSZ(HKEY_CURRENT_USER, L"Software\\Revived", L"DataFolder");
+	if (dataFolder != L"Revived")
+		dataFolder = L"Revive";
+
 	WCHAR LogPath[MAX_PATH];
 	if (SUCCEEDED(SHGetFolderPath(NULL, CSIDL_LOCAL_APPDATA, NULL, 0, LogPath)))
 	{
-		wcsncat(LogPath, L"\\Revive", MAX_PATH);
+		std::wstring logSubdir = L"\\" + dataFolder;
+		wcsncat(LogPath, logSubdir.c_str(), MAX_PATH);
 		
 		BOOL exists = PathFileExists(LogPath);
 		if (!exists)
