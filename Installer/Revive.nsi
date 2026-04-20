@@ -60,7 +60,7 @@ FunctionEnd
   
   ;Start Menu Folder Page Configuration
   !define MUI_STARTMENUPAGE_REGISTRY_ROOT "HKCU" 
-  !define MUI_STARTMENUPAGE_REGISTRY_KEY "Software\Revived"
+  !define MUI_STARTMENUPAGE_REGISTRY_KEY "Software\Revive" 
   !define MUI_STARTMENUPAGE_REGISTRY_VALUENAME "Start Menu Folder"
   !define MUI_STARTMENUPAGE_DEFAULTFOLDER "Revived"
   
@@ -172,8 +172,12 @@ install:
   File "${DASH_DIR}\support.vrmanifest"
   File /r "${BASE_DIR}\*.exe"
   File /r /x "${BASE_DIR}\bearer" "${BASE_DIR}\*.dll"
-  File /r "${BASE_DIR}\*.jpg"
   File /r "${BASE_DIR}\Qt*"
+  
+  ; SupportAssets (game cover images organized in subfolders)
+  SetOutPath "$INSTDIR\SupportAssets"
+  File /r "${DASH_DIR}\SupportAssets\*.jpg"
+  SetOutPath "$INSTDIR"
   
   SetOutPath "$INSTDIR\Input"
   
@@ -218,6 +222,12 @@ install:
   
   ;Store installation folder
   WriteRegStr HKLM "Software\Revive" "" $INSTDIR
+
+  ${If} $InstallChoice == "revive"
+    WriteRegStr HKCU "Software\Revived" "DataFolder" "Revive"
+  ${Else}
+    WriteRegStr HKCU "Software\Revived" "DataFolder" "Revived"
+  ${EndIf}
   
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\Uninstall.exe"
