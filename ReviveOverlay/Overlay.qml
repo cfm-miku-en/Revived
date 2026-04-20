@@ -11,6 +11,8 @@ Rectangle {
     color: "#183755"
     id: mainWindow
 
+    property bool settingsVisible: false
+
     Component.onCompleted: Oculus.createObjects();
 
     FolderListModel {
@@ -40,7 +42,7 @@ Rectangle {
         y: 363
         width: 1052
         height: 134
-        color: "#1cc4f7"
+        color: Settings.accentColor
         text: qsTr("No Oculus Store games found, please make sure the Oculus software is installed")
         horizontalAlignment: Text.AlignHCenter
         wrapMode: Text.WordWrap
@@ -103,7 +105,7 @@ Rectangle {
             height: coverGrid.cellHeight
 
             Text {
-                color: "#1cc4f7"
+                color: Settings.accentColor
                 id: coverText
                 text: appKey
                 font.pixelSize: 24
@@ -154,7 +156,7 @@ Rectangle {
             y: coverGrid.currentItem.y + 5
             width: coverGrid.cellWidth - 10
             height: coverGrid.cellHeight - 10
-            border.color: "#b4dff7"
+            border.color: Settings.accentColor
             border.width: 5
             radius: 5
 
@@ -277,5 +279,29 @@ Rectangle {
         source: "no-link.svg"
         fillMode: Image.PreserveAspectFit
         visible: !Platform.connected
+    }
+
+    Rectangle {
+        x: 1854; y: 14
+        width: 52; height: 52
+        color: "transparent"
+        Text {
+            anchors.centerIn: parent
+            text: "\u2699"
+            color: Settings.accentColor
+            font.pixelSize: 36
+        }
+        MouseArea {
+            anchors.fill: parent
+            onClicked: settingsVisible = true
+        }
+    }
+
+    Loader {
+        id: settingsLoader
+        anchors.fill: parent
+        source: settingsVisible ? "qrc:/Settings.qml" : ""
+        z: 2
+        onLoaded: item.closed.connect(function() { settingsVisible = false })
     }
 }
