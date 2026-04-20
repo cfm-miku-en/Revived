@@ -17,6 +17,7 @@ SOURCES += main.cpp\
     openvroverlaycontroller.cpp \
     qquickwindowscaled.cpp \
     revivemanifestcontroller.cpp \
+    settingscontroller.cpp \
     trayiconcontroller.cpp \
     windowsservices.cpp
 
@@ -25,6 +26,8 @@ HEADERS  += \
     openvroverlaycontroller.h \
     qquickwindowscaled.h \
     revivemanifestcontroller.h \
+    revivesettings.h \
+    settingscontroller.h \
     trayiconcontroller.h \
     windowsservices.h
 
