@@ -20,6 +20,33 @@ extern FILE* g_LogFile;
 
 FILE* g_LogFile = NULL;
 
+static const wchar_t* const s_BlockedProcesses[] = {
+	L"roblox", L"robloxplayerbeta", L"robloxstudiobeta",
+	L"chrome", L"firefox", L"msedge", L"opera", L"brave",
+	L"steam", L"steamwebhelper",
+	L"discord", L"spotify",
+	L"explorer",
+};
+
+static bool IsBlockedProcess(const wchar_t* cmdLine)
+{
+	const wchar_t* start = wcsrchr(cmdLine, L'\\');
+	start = start ? start + 1 : cmdLine;
+	wchar_t base[MAX_PATH];
+	wcsncpy(base, start, MAX_PATH - 1);
+	base[MAX_PATH - 1] = L'\0';
+	wchar_t* sp = wcschr(base, L' ');
+	if (sp) *sp = L'\0';
+	wchar_t* dot = wcsrchr(base, L'.');
+	if (dot) *dot = L'\0';
+	for (const wchar_t* name : s_BlockedProcesses)
+	{
+		if (_wcsicmp(base, name) == 0)
+			return true;
+	}
+	return false;
+}
+
 bool IsOpenXRRuntimeInstalled()
 {
 	HKEY key;
@@ -330,6 +357,13 @@ int wmain(int argc, wchar_t *argv[]) {
 			wcsncat(path, argv[i], MAX_PATH);
 			wcsncat(path, L" ", MAX_PATH);
 		}
+	}
+
+	if (*path && IsBlockedProcess(path))
+	{
+		const wchar_t* name = wcsrchr(path, L'\\');
+		LOG("Injection skipped: %ls is in the non-game blocklist\n", name ? name + 1 : path);
+		return 0;
 	}
 
 	if (dlls.empty())
