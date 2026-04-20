@@ -7,6 +7,8 @@
 #include <string.h>
 #include <Shlobj.h>
 #include <Shlwapi.h>
+#include <dxgi.h>
+#pragma comment(lib, "dxgi.lib")
 #include <openvr.h>
 #include <detours/detours.h>
 #include "../ReviveOverlay/version.h"
@@ -229,11 +231,11 @@ int wmain(int argc, wchar_t *argv[]) {
 	std::wstring oculusVer = RegReadSZ(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Oculus VR, LLC\\Oculus", L"Version", KEY_READ | KEY_WOW64_32KEY);
 	if (oculusVer.empty())
     {
-        LOG("Env: Oculus PC version = not installed\n");
+        LOG("Env: Meta Horizon version = not installed\n");
     }
     else
     {
-        LOG("Env: Oculus PC version = %ls\n", oculusVer.c_str());
+        LOG("Env: Meta Horizon version = %ls\n", oculusVer.c_str());
     }
     if (vr::VR_IsRuntimeInstalled())
     {
@@ -254,6 +256,31 @@ int wmain(int argc, wchar_t *argv[]) {
     else
     {
         LOG("Env: OpenXR runtime = %ls\n", xrRuntime.c_str());
+    }
+    {
+        std::string gpuDriver = "unknown";
+        IDXGIFactory* factory = nullptr;
+        if (SUCCEEDED(CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&factory)))
+        {
+            IDXGIAdapter* adapter = nullptr;
+            if (SUCCEEDED(factory->EnumAdapters(0, &adapter)))
+            {
+                LARGE_INTEGER ver;
+                if (SUCCEEDED(adapter->CheckInterfaceSupport(__uuidof(IDXGIDevice), &ver)))
+                {
+                    char buf[64];
+                    sprintf_s(buf, "%u.%u.%u.%u",
+                        (UINT)((ver.QuadPart >> 48) & 0xFFFF),
+                        (UINT)((ver.QuadPart >> 32) & 0xFFFF),
+                        (UINT)((ver.QuadPart >> 16) & 0xFFFF),
+                        (UINT)(ver.QuadPart & 0xFFFF));
+                    gpuDriver = buf;
+                }
+                adapter->Release();
+            }
+            factory->Release();
+        }
+        LOG("Env: GPU driver = %s\n", gpuDriver.c_str());
     }
 	char moduleDir[MAX_PATH];
 	GetModuleFileNameA(NULL, moduleDir, MAX_PATH);
