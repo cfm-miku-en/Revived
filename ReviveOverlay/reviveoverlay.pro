@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui widgets sql
+QT       += core gui widgets sql network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += quick
 
@@ -19,6 +19,7 @@ SOURCES += main.cpp\
     revivemanifestcontroller.cpp \
     settingscontroller.cpp \
     trayiconcontroller.cpp \
+    updatechecker.cpp \
     windowsservices.cpp
 
 HEADERS  += \
@@ -29,6 +30,7 @@ HEADERS  += \
     revivesettings.h \
     settingscontroller.h \
     trayiconcontroller.h \
+    updatechecker.h \
     windowsservices.h
 
 DISTFILES += \
