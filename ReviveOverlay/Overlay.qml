@@ -282,17 +282,19 @@ Rectangle {
     }
 
     Rectangle {
-        x: 1854; y: 14
-        width: 52; height: 52
+        x: 1882; y: 10
+        z: 1
+        width: 28; height: 28
         color: "transparent"
         Text {
             anchors.centerIn: parent
             text: "\u2699"
             color: Settings.accentColor
-            font.pixelSize: 36
+            font.pixelSize: 22
         }
         MouseArea {
             anchors.fill: parent
+            hoverEnabled: true
             onClicked: settingsVisible = true
         }
     }
