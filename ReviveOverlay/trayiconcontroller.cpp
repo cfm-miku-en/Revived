@@ -56,6 +56,7 @@ bool CTrayIconController::Init()
 	QObject::connect(action, SIGNAL(triggered(bool)), this, SLOT(openxr(bool)));
 	m_trayIconMenu.addSeparator();
 	m_trayIconMenu.addAction("&Open library", this, SLOT(show()));
+	m_trayIconMenu.addAction("Se&ttings", this, SLOT(showSettings()));
 	m_trayIconMenu.addAction("&Inject...", this, SLOT(inject()));
 	m_trayIconMenu.addAction("&Shortcut...", this, SLOT(shortcut()));
 	m_trayIconMenu.addSeparator();
@@ -227,6 +228,12 @@ QString CTrayIconController::openDialog()
 void CTrayIconController::show()
 {
 	COpenVROverlayController::SharedInstance()->ShowWindow();
+}
+
+void CTrayIconController::showSettings()
+{
+	COpenVROverlayController::SharedInstance()->ShowWindow();
+	emit showSettingsRequested();
 }
 
 void CTrayIconController::activated(QSystemTrayIcon::ActivationReason reason)

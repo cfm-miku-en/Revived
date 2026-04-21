@@ -304,4 +304,9 @@ Rectangle {
         z: 2
         onLoaded: item.closed.connect(function() { settingsVisible = false })
     }
+
+    Connections {
+        target: TrayIcon
+        function onShowSettingsRequested() { settingsVisible = true }
+    }
 }

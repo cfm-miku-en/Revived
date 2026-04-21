@@ -36,11 +36,15 @@ public:
 public slots:
 	void quit();
 
+signals:
+	void showSettingsRequested();
+
 protected slots:
 	void openxr(bool checked);
 	void inject();
 	void shortcut();
 	void show();
+	void showSettings();
 	void showHelp();
 	void checkForUpdates();
 	void onUpdateAvailable(const QString &version, const QString &url);
