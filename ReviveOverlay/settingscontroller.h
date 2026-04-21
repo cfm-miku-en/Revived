@@ -13,6 +13,8 @@ class CSettingsController : public QObject
 	Q_PROPERTY(QString metaHorizonPath READ metaHorizonPath WRITE setMetaHorizonPath NOTIFY settingsChanged)
 	Q_PROPERTY(QString gamesLibraryPath READ gamesLibraryPath WRITE setGamesLibraryPath NOTIFY settingsChanged)
 	Q_PROPERTY(QString accentColor READ accentColor WRITE setAccentColor NOTIFY settingsChanged)
+	Q_PROPERTY(QString borderColor READ borderColor WRITE setBorderColor NOTIFY settingsChanged)
+	Q_PROPERTY(QString backgroundColor READ backgroundColor WRITE setBackgroundColor NOTIFY settingsChanged)
 
 public:
 	enum RuntimePreference { OpenVR = 0, OpenXR = 1 };
@@ -24,16 +26,21 @@ public:
 	QString metaHorizonPath() const { return m_metaHorizonPath; }
 	QString gamesLibraryPath() const { return m_gamesLibraryPath; }
 	QString accentColor() const { return m_accentColor; }
+	QString borderColor() const { return m_borderColor; }
+	QString backgroundColor() const { return m_backgroundColor; }
 
 	void setRuntimePreference(int value) { m_runtime = value; }
 	void setMetaHorizonPath(const QString &path) { m_metaHorizonPath = path; }
 	void setGamesLibraryPath(const QString &path) { m_gamesLibraryPath = path; }
 	void setAccentColor(const QString &color) { m_accentColor = color; }
+	void setBorderColor(const QString &color) { m_borderColor = color; }
+	void setBackgroundColor(const QString &color) { m_backgroundColor = color; }
 
 	Q_INVOKABLE QString apply();
 	Q_INVOKABLE void cancel();
 	Q_INVOKABLE void restoreDefaults();
 	Q_INVOKABLE QString browseForFolder(const QString &hint);
+	Q_INVOKABLE QString normalizeHex(const QString &input) const;
 
 signals:
 	void settingsChanged();
@@ -46,6 +53,8 @@ private:
 	QString m_metaHorizonPath;
 	QString m_gamesLibraryPath;
 	QString m_accentColor;
+	QString m_borderColor;
+	QString m_backgroundColor;
 };
 
 #endif // SETTINGSCONTROLLER_H
