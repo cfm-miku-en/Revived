@@ -1,2 +1,2 @@
-3.4.0
-https://github.com/cfm-miku-en/Revived/releases/tag/v3.4.0-vive
+3.6.0
+https://github.com/cfm-miku-en/Revived/releases/tag/v3.6.0-vive
