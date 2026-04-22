@@ -203,6 +203,35 @@ bool GetOculusBasePath(wchar_t* path, uint32_t length)
 	return true;
 }
 
+QString CReviveManifestController::DetectBasePath()
+{
+	wchar_t path[MAX_PATH] = { 0 };
+	if (!GetOculusBasePath(path, MAX_PATH))
+		return QString();
+	return QString::fromWCharArray(path);
+}
+
+QString CReviveManifestController::DetectDefaultLibraryPath()
+{
+	WCHAR keyPath[MAX_PATH] = { L"Software\\Oculus VR, LLC\\Oculus\\Libraries\\" };
+	HKEY oculusKey;
+	if (RegOpenKeyExW(HKEY_CURRENT_USER, keyPath, 0, KEY_READ, &oculusKey) != ERROR_SUCCESS)
+		return QString();
+
+	WCHAR guid[40] = { L'\0' };
+	DWORD guidSize = sizeof(guid);
+	LONG error = RegQueryValueExW(oculusKey, L"DefaultLibrary", NULL, NULL, (PBYTE)guid, &guidSize);
+	RegCloseKey(oculusKey);
+	if (error != ERROR_SUCCESS)
+		return QString();
+
+	WCHAR path[MAX_PATH] = { 0 };
+	if (!GetLibraryPath(path, MAX_PATH, guid))
+		return QString();
+
+	return QString::fromWCharArray(path);
+}
+
 CReviveManifestController::CReviveManifestController()
 	: BaseClass()
 	, m_appFile(QCoreApplication::applicationDirPath() + "/app.vrmanifest")

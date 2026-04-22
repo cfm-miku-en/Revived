@@ -52,8 +52,8 @@ Rectangle {
     property string errorMessage: ""
 
     property string previewRuntime:    Settings.runtimePreference === 1 ? "OpenXR" : "OpenVR"
-    property string previewMetaPath:   Settings.metaHorizonPath
-    property string previewLibPath:    Settings.gamesLibraryPath
+    property string previewMetaPath:   Settings.metaHorizonPath.length > 0 ? Settings.metaHorizonPath : Settings.detectedMetaHorizonPath()
+    property string previewLibPath:    Settings.gamesLibraryPath.length > 0 ? Settings.gamesLibraryPath : Settings.detectedGamesLibraryPath()
     property string previewAccent:     Settings.accentColor
     property string previewBorder:     Settings.borderColor
     property string previewBackground: Settings.backgroundColor
@@ -77,8 +77,8 @@ Rectangle {
 
     function syncPreviewsFromController() {
         previewRuntime    = Settings.runtimePreference === 1 ? "OpenXR" : "OpenVR"
-        previewMetaPath   = Settings.metaHorizonPath
-        previewLibPath    = Settings.gamesLibraryPath
+        previewMetaPath   = Settings.metaHorizonPath.length > 0 ? Settings.metaHorizonPath : Settings.detectedMetaHorizonPath()
+        previewLibPath    = Settings.gamesLibraryPath.length > 0 ? Settings.gamesLibraryPath : Settings.detectedGamesLibraryPath()
         previewAccent     = Settings.accentColor
         previewBorder     = Settings.borderColor
         previewBackground = Settings.backgroundColor

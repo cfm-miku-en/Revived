@@ -41,6 +41,8 @@ public:
 	Q_INVOKABLE void restoreDefaults();
 	Q_INVOKABLE QString browseForFolder(const QString &hint);
 	Q_INVOKABLE QString normalizeHex(const QString &input) const;
+	Q_INVOKABLE QString detectedMetaHorizonPath() const;
+	Q_INVOKABLE QString detectedGamesLibraryPath() const;
 
 signals:
 	void settingsChanged();

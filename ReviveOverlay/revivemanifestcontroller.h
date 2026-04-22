@@ -31,6 +31,9 @@ public:
 	virtual ~CReviveManifestController();
 
 	bool Init();
+
+	static QString DetectBasePath();
+	static QString DetectDefaultLibraryPath();
 	bool LaunchInjector(const QString& args);
 	void UseOpenXR(bool enabled) { m_bUseOpenXR = enabled; }
 	bool UsingOpenXR() const { return m_bUseOpenXR; }

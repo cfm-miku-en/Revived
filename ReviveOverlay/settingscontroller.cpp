@@ -1,4 +1,5 @@
 #include "settingscontroller.h"
+#include "revivemanifestcontroller.h"
 #include "revivesettings.h"
 #include <QDir>
 #include <QFileDialog>
@@ -116,6 +117,16 @@ void CSettingsController::restoreDefaults()
 QString CSettingsController::browseForFolder(const QString &hint)
 {
 	return QFileDialog::getExistingDirectory(nullptr, QStringLiteral("Select Folder"), hint);
+}
+
+QString CSettingsController::detectedMetaHorizonPath() const
+{
+	return QDir::fromNativeSeparators(CReviveManifestController::DetectBasePath());
+}
+
+QString CSettingsController::detectedGamesLibraryPath() const
+{
+	return QDir::fromNativeSeparators(CReviveManifestController::DetectDefaultLibraryPath());
 }
 
 QString CSettingsController::normalizeHex(const QString &input) const
