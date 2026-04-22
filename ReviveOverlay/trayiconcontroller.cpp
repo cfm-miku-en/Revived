@@ -4,6 +4,7 @@
 #include "updatechecker.h"
 #include "windowsservices.h"
 #include "oculusoauthtokencontroller.h"
+#include "version.h"
 
 #include <qt_windows.h>
 
@@ -199,7 +200,9 @@ void CTrayIconController::onUpToDate()
 		return;
 	m_LastInfo = TrayInfo_UpToDate;
 	m_manualCheck = false;
-	m_trayIcon->showMessage("Revived", "Up to date.", QSystemTrayIcon::Information);
+	m_trayIcon->showMessage("Revived",
+	                        QStringLiteral("Revived is up to date (current: ") + QStringLiteral(REV_VERSION_STRING) + QStringLiteral(")."),
+	                        QSystemTrayIcon::Information);
 }
 
 void CTrayIconController::onUpdateCheckFailed(const QString &reason)
