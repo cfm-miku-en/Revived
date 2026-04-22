@@ -282,13 +282,20 @@ Rectangle {
     }
 
     Rectangle {
-        x: 1882; y: 10
+        id: settingsButton
         z: 1
-        width: 28; height: 28
+        width: 160; height: 48
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        anchors.rightMargin: 20
+        anchors.bottomMargin: 20
         color: "transparent"
+        border.color: Settings.accentColor
+        border.width: 2
+        radius: 4
         Text {
             anchors.centerIn: parent
-            text: "\u2699"
+            text: "Settings"
             color: Settings.accentColor
             font.pixelSize: 22
         }
