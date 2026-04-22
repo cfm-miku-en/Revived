@@ -16,7 +16,10 @@ static const QRegularExpression kHexColor(QStringLiteral("^#?([0-9a-fA-F]{6})$")
 
 static QString coerceColor(const QString &raw, const QString &fallback)
 {
-	auto match = kHexColor.match(raw.trimmed());
+	QString trimmed = raw.trimmed();
+	if (trimmed.isEmpty())
+		return fallback;
+	auto match = kHexColor.match(trimmed);
 	if (!match.hasMatch())
 		return fallback;
 	return QStringLiteral("#") + match.captured(1).toUpper();
