@@ -1,4 +1,5 @@
 import QtQuick 2.4
+import QtQuick.Dialogs 1.3
 
 Rectangle {
     id: settingsPage
@@ -6,6 +7,47 @@ Rectangle {
     color: "#0E1A2B"
 
     signal closed()
+
+    function urlToPath(url) {
+        var s = url.toString()
+        if (s.indexOf("file:///") === 0)
+            s = s.substring(8)
+        else if (s.indexOf("file://") === 0)
+            s = s.substring(7)
+        return decodeURIComponent(s).replace(/\//g, '\\')
+    }
+
+    function pathToUrl(path) {
+        if (!path || path.length === 0)
+            return ""
+        return "file:///" + encodeURI(path.replace(/\\/g, '/'))
+    }
+
+    FileDialog {
+        id: metaFolderDialog
+        title: "Select Meta Horizon install folder"
+        selectFolder: true
+        selectMultiple: false
+        folder: settingsPage.pathToUrl(previewMetaPath)
+        onAccepted: {
+            var p = settingsPage.urlToPath(metaFolderDialog.fileUrl)
+            previewMetaPath = p
+            basePathInput.text = p
+        }
+    }
+
+    FileDialog {
+        id: libFolderDialog
+        title: "Select games library folder"
+        selectFolder: true
+        selectMultiple: false
+        folder: settingsPage.pathToUrl(previewLibPath)
+        onAccepted: {
+            var p = settingsPage.urlToPath(libFolderDialog.fileUrl)
+            previewLibPath = p
+            libPathInput.text = p
+        }
+    }
 
     property string errorMessage: ""
 
@@ -121,13 +163,7 @@ Rectangle {
         Text { anchors.centerIn: parent; text: "Browse…"; color: "#0E1A2B"; font.pixelSize: 20 }
         MouseArea {
             anchors.fill: parent
-            onClicked: {
-                var p = Settings.browseForFolder(previewMetaPath)
-                if (p.length > 0) {
-                    previewMetaPath = p
-                    basePathInput.text = p
-                }
-            }
+            onClicked: metaFolderDialog.open()
         }
     }
 
@@ -151,13 +187,7 @@ Rectangle {
         Text { anchors.centerIn: parent; text: "Browse…"; color: "#0E1A2B"; font.pixelSize: 20 }
         MouseArea {
             anchors.fill: parent
-            onClicked: {
-                var p = Settings.browseForFolder(previewLibPath)
-                if (p.length > 0) {
-                    previewLibPath = p
-                    libPathInput.text = p
-                }
-            }
+            onClicked: libFolderDialog.open()
         }
     }
 
