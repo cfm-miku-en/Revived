@@ -226,7 +226,7 @@ QString CReviveManifestController::DetectDefaultLibraryPath()
 		return QString();
 
 	WCHAR path[MAX_PATH] = { 0 };
-	if (!GetLibraryPath(path, MAX_PATH, guid))
+	if (!::GetLibraryPath(path, MAX_PATH, guid))
 		return QString();
 
 	return QString::fromWCharArray(path);
