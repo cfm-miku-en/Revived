@@ -17,10 +17,13 @@ static bool isNewer(const QString &remote, const QString &local)
 {
 	QStringList r = remote.split('.');
 	QStringList l = local.split('.');
-	int n = qMax(r.size(), l.size());
+	int n = qMin(r.size(), l.size());
 	for (int i = 0; i < n; i++) {
-		int rv = (i < r.size()) ? r[i].trimmed().toInt() : 0;
-		int lv = (i < l.size()) ? l[i].trimmed().toInt() : 0;
+		bool okR = false, okL = false;
+		int rv = r[i].trimmed().toInt(&okR);
+		int lv = l[i].trimmed().toInt(&okL);
+		if (!okR || !okL)
+			return false;
 		if (rv > lv) return true;
 		if (rv < lv) return false;
 	}
@@ -40,27 +43,31 @@ void CUpdateChecker::checkForUpdate()
 	QObject::connect(reply, &QNetworkReply::finished, [this, reply]() {
 		reply->deleteLater();
 		if (reply->error() != QNetworkReply::NoError) {
-			qInfo("update check: %s", qUtf8Printable(reply->errorString()));
+			qInfo("update check: local=%s remote=<error> (%s)",
+				REV_VERSION_STRING, qUtf8Printable(reply->errorString()));
 			emit updateCheckFailed(reply->errorString());
 			return;
 		}
 		int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 		if (status != 200) {
 			QString reason = QStringLiteral("HTTP %1").arg(status);
-			qInfo("update check: %s", qUtf8Printable(reason));
+			qInfo("update check: local=%s remote=<error> (%s)",
+				REV_VERSION_STRING, qUtf8Printable(reason));
 			emit updateCheckFailed(reason);
 			return;
 		}
 		QString body = QString::fromUtf8(reply->readAll());
 		QStringList lines = body.split('\n');
 		QString remoteVersion = lines.isEmpty() ? QString() : lines[0].trimmed();
+		QString localVersion = QStringLiteral(REV_VERSION_STRING);
+		qInfo("update check: local=%s remote=%s",
+			qUtf8Printable(localVersion), qUtf8Printable(remoteVersion));
 		if (remoteVersion.isEmpty()) {
-			qInfo("update check: empty response");
 			emit updateCheckFailed(QStringLiteral("empty response"));
 			return;
 		}
 		QString releaseUrl = (lines.size() > 1) ? lines[1].trimmed() : QString();
-		if (isNewer(remoteVersion, QStringLiteral(REV_VERSION_STRING)))
+		if (isNewer(remoteVersion, localVersion))
 			emit updateAvailable(remoteVersion, releaseUrl);
 		else
 			emit upToDate();
