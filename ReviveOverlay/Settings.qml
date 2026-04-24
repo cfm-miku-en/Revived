@@ -51,12 +51,12 @@ Rectangle {
 
     property string errorMessage: ""
 
-    property string previewRuntime:    Settings.runtimePreference === 1 ? "OpenXR" : "OpenVR"
-    property string previewMetaPath:   Settings.metaHorizonPath.length > 0 ? Settings.metaHorizonPath : Settings.detectedMetaHorizonPath()
-    property string previewLibPath:    Settings.gamesLibraryPath.length > 0 ? Settings.gamesLibraryPath : Settings.detectedGamesLibraryPath()
-    property string previewAccent:     Settings.accentColor
-    property string previewBorder:     Settings.borderColor
-    property string previewBackground: Settings.backgroundColor
+    property string previewRuntime:    AppSettings.runtimePreference === 1 ? "OpenXR" : "OpenVR"
+    property string previewMetaPath:   AppSettings.metaHorizonPath.length > 0 ? AppSettings.metaHorizonPath : AppSettings.detectedMetaHorizonPath()
+    property string previewLibPath:    AppSettings.gamesLibraryPath.length > 0 ? AppSettings.gamesLibraryPath : AppSettings.detectedGamesLibraryPath()
+    property string previewAccent:     AppSettings.accentColor
+    property string previewBorder:     AppSettings.borderColor
+    property string previewBackground: AppSettings.backgroundColor
 
     property color textPrimary:   "#FFFFFF"
     property color textSecondary: "#B4DFF7"
@@ -76,12 +76,12 @@ Rectangle {
     ]
 
     function syncPreviewsFromController() {
-        previewRuntime    = Settings.runtimePreference === 1 ? "OpenXR" : "OpenVR"
-        previewMetaPath   = Settings.metaHorizonPath.length > 0 ? Settings.metaHorizonPath : Settings.detectedMetaHorizonPath()
-        previewLibPath    = Settings.gamesLibraryPath.length > 0 ? Settings.gamesLibraryPath : Settings.detectedGamesLibraryPath()
-        previewAccent     = Settings.accentColor
-        previewBorder     = Settings.borderColor
-        previewBackground = Settings.backgroundColor
+        previewRuntime    = AppSettings.runtimePreference === 1 ? "OpenXR" : "OpenVR"
+        previewMetaPath   = AppSettings.metaHorizonPath.length > 0 ? AppSettings.metaHorizonPath : AppSettings.detectedMetaHorizonPath()
+        previewLibPath    = AppSettings.gamesLibraryPath.length > 0 ? AppSettings.gamesLibraryPath : AppSettings.detectedGamesLibraryPath()
+        previewAccent     = AppSettings.accentColor
+        previewBorder     = AppSettings.borderColor
+        previewBackground = AppSettings.backgroundColor
     }
 
     Text {
@@ -230,7 +230,7 @@ Rectangle {
                 color: settingsPage.textPrimary; font.pixelSize: 22; selectionColor: previewAccent
                 text: previewAccent
                 onEditingFinished: {
-                    var n = Settings.normalizeHex(text)
+                    var n = AppSettings.normalizeHex(text)
                     if (n.length > 0) {
                         previewAccent = n
                         text = n
@@ -282,7 +282,7 @@ Rectangle {
                 color: settingsPage.textPrimary; font.pixelSize: 22; selectionColor: previewAccent
                 text: previewBorder
                 onEditingFinished: {
-                    var n = Settings.normalizeHex(text)
+                    var n = AppSettings.normalizeHex(text)
                     if (n.length > 0) {
                         previewBorder = n
                         text = n
@@ -334,7 +334,7 @@ Rectangle {
                 color: settingsPage.textPrimary; font.pixelSize: 22; selectionColor: previewAccent
                 text: previewBackground
                 onEditingFinished: {
-                    var n = Settings.normalizeHex(text)
+                    var n = AppSettings.normalizeHex(text)
                     if (n.length > 0) {
                         previewBackground = n
                         text = n
@@ -371,13 +371,13 @@ Rectangle {
             MouseArea {
                 anchors.fill: parent
                 onClicked: {
-                    Settings.setRuntimePreference(previewRuntime === "OpenXR" ? 1 : 0)
-                    Settings.setMetaHorizonPath(previewMetaPath)
-                    Settings.setGamesLibraryPath(previewLibPath)
-                    Settings.setAccentColor(previewAccent)
-                    Settings.setBorderColor(previewBorder)
-                    Settings.setBackgroundColor(previewBackground)
-                    var err = Settings.apply()
+                    AppSettings.setRuntimePreference(previewRuntime === "OpenXR" ? 1 : 0)
+                    AppSettings.setMetaHorizonPath(previewMetaPath)
+                    AppSettings.setGamesLibraryPath(previewLibPath)
+                    AppSettings.setAccentColor(previewAccent)
+                    AppSettings.setBorderColor(previewBorder)
+                    AppSettings.setBackgroundColor(previewBackground)
+                    var err = AppSettings.apply()
                     if (err.length > 0) {
                         settingsPage.errorMessage = err
                     } else {
@@ -395,7 +395,7 @@ Rectangle {
             MouseArea {
                 anchors.fill: parent
                 onClicked: {
-                    Settings.cancel()
+                    AppSettings.cancel()
                     settingsPage.errorMessage = ""
                     settingsPage.closed()
                 }
@@ -409,7 +409,7 @@ Rectangle {
             MouseArea {
                 anchors.fill: parent
                 onClicked: {
-                    Settings.restoreDefaults()
+                    AppSettings.restoreDefaults()
                     syncPreviewsFromController()
                     basePathInput.text = previewMetaPath
                     libPathInput.text = previewLibPath

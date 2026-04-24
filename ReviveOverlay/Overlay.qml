@@ -42,7 +42,7 @@ Rectangle {
         y: 363
         width: 1052
         height: 134
-        color: Settings.accentColor
+        color: AppSettings.accentColor
         text: qsTr("No Oculus Store games found, please make sure the Oculus software is installed")
         horizontalAlignment: Text.AlignHCenter
         wrapMode: Text.WordWrap
@@ -105,7 +105,7 @@ Rectangle {
             height: coverGrid.cellHeight
 
             Text {
-                color: Settings.accentColor
+                color: AppSettings.accentColor
                 id: coverText
                 text: appKey
                 font.pixelSize: 24
@@ -156,7 +156,7 @@ Rectangle {
             y: coverGrid.currentItem.y + 5
             width: coverGrid.cellWidth - 10
             height: coverGrid.cellHeight - 10
-            border.color: Settings.accentColor
+            border.color: AppSettings.accentColor
             border.width: 5
             radius: 5
 
@@ -290,13 +290,13 @@ Rectangle {
         anchors.rightMargin: 20
         anchors.bottomMargin: 20
         color: "transparent"
-        border.color: Settings.accentColor
+        border.color: AppSettings.accentColor
         border.width: 2
         radius: 4
         Text {
             anchors.centerIn: parent
             text: "Settings"
-            color: Settings.accentColor
+            color: AppSettings.accentColor
             font.pixelSize: 22
         }
         MouseArea {

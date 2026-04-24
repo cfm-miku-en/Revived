@@ -118,7 +118,7 @@ int main(int argc, char *argv[])
 	qmlEngine.rootContext()->setContextProperty("Revive", CReviveManifestController::SharedInstance());
 	qmlEngine.rootContext()->setContextProperty("OpenVR", COpenVROverlayController::SharedInstance());
 	qmlEngine.rootContext()->setContextProperty("Platform", COculusOauthTokenController::SharedInstance());
-	qmlEngine.rootContext()->setContextProperty("Settings", CSettingsController::SharedInstance());
+	qmlEngine.rootContext()->setContextProperty("AppSettings", CSettingsController::SharedInstance());
 	qmlEngine.rootContext()->setContextProperty("TrayIcon", CTrayIconController::SharedInstance());
 
 	QQmlComponent qmlComponent( &qmlEngine, QUrl("qrc:/Overlay.qml"));
