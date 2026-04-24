@@ -30,11 +30,11 @@ public:
 	QString backgroundColor() const { return m_backgroundColor; }
 
 	Q_INVOKABLE void setRuntimePreference(int value) { m_runtime = value; }
-	void setMetaHorizonPath(const QString &path) { m_metaHorizonPath = path; }
-	void setGamesLibraryPath(const QString &path) { m_gamesLibraryPath = path; }
-	void setAccentColor(const QString &color) { m_accentColor = color; }
-	void setBorderColor(const QString &color) { m_borderColor = color; }
-	void setBackgroundColor(const QString &color) { m_backgroundColor = color; }
+	Q_INVOKABLE void setMetaHorizonPath(const QString &path) { m_metaHorizonPath = path; }
+	Q_INVOKABLE void setGamesLibraryPath(const QString &path) { m_gamesLibraryPath = path; }
+	Q_INVOKABLE void setAccentColor(const QString &color) { m_accentColor = color; }
+	Q_INVOKABLE void setBorderColor(const QString &color) { m_borderColor = color; }
+	Q_INVOKABLE void setBackgroundColor(const QString &color) { m_backgroundColor = color; }
 
 	Q_INVOKABLE QString apply();
 	Q_INVOKABLE void cancel();
