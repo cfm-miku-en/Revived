@@ -29,7 +29,7 @@ public:
 	QString borderColor() const { return m_borderColor; }
 	QString backgroundColor() const { return m_backgroundColor; }
 
-	void setRuntimePreference(int value) { m_runtime = value; }
+	Q_INVOKABLE void setRuntimePreference(int value) { m_runtime = value; }
 	void setMetaHorizonPath(const QString &path) { m_metaHorizonPath = path; }
 	void setGamesLibraryPath(const QString &path) { m_gamesLibraryPath = path; }
 	void setAccentColor(const QString &color) { m_accentColor = color; }
