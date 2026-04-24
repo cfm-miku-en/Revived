@@ -57,6 +57,10 @@ int main(int argc, char *argv[])
 	QSurfaceFormat::setDefaultFormat(fmt);
 	QApplication a(argc, argv);
 
+	QCoreApplication::setOrganizationName("Revived");
+	QCoreApplication::setOrganizationDomain("github.com/cfm-miku-en");
+	QCoreApplication::setApplicationName("Revived");
+
 	// Open the log file and install our handler.
 	QString logPath = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/" + dataFolderName() + "/";
 	if (QDir().mkpath(logPath)) {
