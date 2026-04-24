@@ -8,7 +8,7 @@ import "Oculus.js" as Oculus
 Rectangle {
     width: 1920
     height: 1080
-    color: "#183755"
+    color: AppSettings.dashboardBackgroundColor
     id: mainWindow
 
     property bool settingsVisible: false

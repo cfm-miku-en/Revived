@@ -8,9 +8,10 @@
 
 static CSettingsController *s_pSharedSettings = nullptr;
 
-static const QString kDefaultAccent     = QStringLiteral("#1CC4F7");
-static const QString kDefaultBorder     = QStringLiteral("#B4DFF7");
-static const QString kDefaultBackground = QStringLiteral("#0E1A2B");
+static const QString kDefaultAccent              = QStringLiteral("#1CC4F7");
+static const QString kDefaultBorder              = QStringLiteral("#B4DFF7");
+static const QString kDefaultSettingsBackground  = QStringLiteral("#0E1A2B");
+static const QString kDefaultDashboardBackground = QStringLiteral("#183755");
 
 static const QRegularExpression kHexColor(QStringLiteral("^#?([0-9a-fA-F]{6})$"));
 
@@ -37,7 +38,8 @@ CSettingsController::CSettingsController()
 	, m_runtime(OpenVR)
 	, m_accentColor(kDefaultAccent)
 	, m_borderColor(kDefaultBorder)
-	, m_backgroundColor(kDefaultBackground)
+	, m_settingsBackgroundColor(kDefaultSettingsBackground)
+	, m_dashboardBackgroundColor(kDefaultDashboardBackground)
 {
 	load();
 }
@@ -51,7 +53,8 @@ void CSettingsController::load()
 	m_gamesLibraryPath = reg.value(QStringLiteral("GamesLibraryPath")).toString();
 	m_accentColor = coerceColor(reg.value(QStringLiteral("AccentColor")).toString(), kDefaultAccent);
 	m_borderColor = coerceColor(reg.value(QStringLiteral("BorderColor")).toString(), kDefaultBorder);
-	m_backgroundColor = coerceColor(reg.value(QStringLiteral("BackgroundColor")).toString(), kDefaultBackground);
+	m_settingsBackgroundColor = coerceColor(reg.value(QStringLiteral("SettingsBackgroundColor")).toString(), kDefaultSettingsBackground);
+	m_dashboardBackgroundColor = coerceColor(reg.value(QStringLiteral("DashboardBackgroundColor")).toString(), kDefaultDashboardBackground);
 }
 
 QString CSettingsController::apply()
@@ -72,12 +75,15 @@ QString CSettingsController::apply()
 		return QStringLiteral("Accent color must be a valid hex color (e.g. #1CC4F7).");
 	if (!kHexColor.match(m_borderColor).hasMatch())
 		return QStringLiteral("Border color must be a valid hex color (e.g. #B4DFF7).");
-	if (!kHexColor.match(m_backgroundColor).hasMatch())
-		return QStringLiteral("Background color must be a valid hex color (e.g. #0E1A2B).");
+	if (!kHexColor.match(m_settingsBackgroundColor).hasMatch())
+		return QStringLiteral("Settings background color must be a valid hex color (e.g. #0E1A2B).");
+	if (!kHexColor.match(m_dashboardBackgroundColor).hasMatch())
+		return QStringLiteral("Dashboard background color must be a valid hex color (e.g. #183755).");
 
 	m_accentColor = coerceColor(m_accentColor, kDefaultAccent);
 	m_borderColor = coerceColor(m_borderColor, kDefaultBorder);
-	m_backgroundColor = coerceColor(m_backgroundColor, kDefaultBackground);
+	m_settingsBackgroundColor = coerceColor(m_settingsBackgroundColor, kDefaultSettingsBackground);
+	m_dashboardBackgroundColor = coerceColor(m_dashboardBackgroundColor, kDefaultDashboardBackground);
 
 	QSettings reg(QStringLiteral("HKEY_CURRENT_USER\\Software\\Revived"), QSettings::NativeFormat);
 	reg.setValue(QStringLiteral("RuntimePreference"), m_runtime == OpenXR ? QStringLiteral("OpenXR") : QStringLiteral("OpenVR"));
@@ -85,7 +91,8 @@ QString CSettingsController::apply()
 	reg.setValue(QStringLiteral("GamesLibraryPath"), m_gamesLibraryPath);
 	reg.setValue(QStringLiteral("AccentColor"), m_accentColor);
 	reg.setValue(QStringLiteral("BorderColor"), m_borderColor);
-	reg.setValue(QStringLiteral("BackgroundColor"), m_backgroundColor);
+	reg.setValue(QStringLiteral("SettingsBackgroundColor"), m_settingsBackgroundColor);
+	reg.setValue(QStringLiteral("DashboardBackgroundColor"), m_dashboardBackgroundColor);
 
 	emit settingsChanged();
 	return QString();
@@ -105,14 +112,16 @@ void CSettingsController::restoreDefaults()
 	reg.remove(QStringLiteral("GamesLibraryPath"));
 	reg.remove(QStringLiteral("AccentColor"));
 	reg.remove(QStringLiteral("BorderColor"));
-	reg.remove(QStringLiteral("BackgroundColor"));
+	reg.remove(QStringLiteral("SettingsBackgroundColor"));
+	reg.remove(QStringLiteral("DashboardBackgroundColor"));
 
 	m_runtime = OpenVR;
 	m_metaHorizonPath.clear();
 	m_gamesLibraryPath.clear();
 	m_accentColor = kDefaultAccent;
 	m_borderColor = kDefaultBorder;
-	m_backgroundColor = kDefaultBackground;
+	m_settingsBackgroundColor = kDefaultSettingsBackground;
+	m_dashboardBackgroundColor = kDefaultDashboardBackground;
 
 	emit settingsChanged();
 }

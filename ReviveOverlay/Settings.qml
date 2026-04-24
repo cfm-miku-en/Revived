@@ -4,7 +4,7 @@ import QtQuick.Dialogs 1.3
 Rectangle {
     id: settingsPage
     anchors.fill: parent
-    color: previewBackground
+    color: previewSettingsBackground
 
     signal closed()
 
@@ -51,12 +51,13 @@ Rectangle {
 
     property string errorMessage: ""
 
-    property string previewRuntime:    AppSettings.runtimePreference === 1 ? "OpenXR" : "OpenVR"
-    property string previewMetaPath:   AppSettings.metaHorizonPath.length > 0 ? AppSettings.metaHorizonPath : AppSettings.detectedMetaHorizonPath()
-    property string previewLibPath:    AppSettings.gamesLibraryPath.length > 0 ? AppSettings.gamesLibraryPath : AppSettings.detectedGamesLibraryPath()
-    property string previewAccent:     AppSettings.accentColor
-    property string previewBorder:     AppSettings.borderColor
-    property string previewBackground: AppSettings.backgroundColor
+    property string previewRuntime:             AppSettings.runtimePreference === 1 ? "OpenXR" : "OpenVR"
+    property string previewMetaPath:            AppSettings.metaHorizonPath.length > 0 ? AppSettings.metaHorizonPath : AppSettings.detectedMetaHorizonPath()
+    property string previewLibPath:             AppSettings.gamesLibraryPath.length > 0 ? AppSettings.gamesLibraryPath : AppSettings.detectedGamesLibraryPath()
+    property string previewAccent:              AppSettings.accentColor
+    property string previewBorder:              AppSettings.borderColor
+    property string previewSettingsBackground:  AppSettings.settingsBackgroundColor
+    property string previewDashboardBackground: AppSettings.dashboardBackgroundColor
 
     property color textPrimary:   "#FFFFFF"
     property color textSecondary: "#B4DFF7"
@@ -72,16 +73,17 @@ Rectangle {
     ]
     property var backgroundSwatches: [
         "#000000", "#0E1A2B", "#101820",
-        "#1A1A1A", "#1A1028", "#102018"
+        "#183755", "#1A1A1A", "#1A1028", "#102018"
     ]
 
     function syncPreviewsFromController() {
-        previewRuntime    = AppSettings.runtimePreference === 1 ? "OpenXR" : "OpenVR"
-        previewMetaPath   = AppSettings.metaHorizonPath.length > 0 ? AppSettings.metaHorizonPath : AppSettings.detectedMetaHorizonPath()
-        previewLibPath    = AppSettings.gamesLibraryPath.length > 0 ? AppSettings.gamesLibraryPath : AppSettings.detectedGamesLibraryPath()
-        previewAccent     = AppSettings.accentColor
-        previewBorder     = AppSettings.borderColor
-        previewBackground = AppSettings.backgroundColor
+        previewRuntime             = AppSettings.runtimePreference === 1 ? "OpenXR" : "OpenVR"
+        previewMetaPath            = AppSettings.metaHorizonPath.length > 0 ? AppSettings.metaHorizonPath : AppSettings.detectedMetaHorizonPath()
+        previewLibPath             = AppSettings.gamesLibraryPath.length > 0 ? AppSettings.gamesLibraryPath : AppSettings.detectedGamesLibraryPath()
+        previewAccent              = AppSettings.accentColor
+        previewBorder              = AppSettings.borderColor
+        previewSettingsBackground  = AppSettings.settingsBackgroundColor
+        previewDashboardBackground = AppSettings.dashboardBackgroundColor
     }
 
     Text {
@@ -192,7 +194,7 @@ Rectangle {
     }
 
     Text {
-        x: 80; y: 528
+        x: 80; y: 520
         color: settingsPage.textPrimary
         font.pixelSize: 28
         text: "Appearance"
@@ -200,7 +202,7 @@ Rectangle {
 
     Item {
         id: accentRow
-        x: 80; y: 574; width: 1760; height: 88
+        x: 80; y: 566; width: 1760; height: 88
 
         Text { x: 0; y: 4; color: settingsPage.textSecondary; font.pixelSize: 22; text: "Accent" }
 
@@ -222,7 +224,7 @@ Rectangle {
         }
 
         Rectangle {
-            x: 580; y: 36; width: 220; height: 44
+            x: 680; y: 36; width: 220; height: 44
             color: settingsPage.fieldFill; border.color: previewBorder; border.width: 1
             TextInput {
                 id: accentHex
@@ -244,7 +246,7 @@ Rectangle {
         }
 
         Rectangle {
-            x: 820; y: 36; width: 44; height: 44; radius: 4
+            x: 920; y: 36; width: 44; height: 44; radius: 4
             color: previewAccent
             border.color: "#FFFFFF"; border.width: 1
         }
@@ -252,7 +254,7 @@ Rectangle {
 
     Item {
         id: borderRow
-        x: 80; y: 674; width: 1760; height: 88
+        x: 80; y: 646; width: 1760; height: 88
 
         Text { x: 0; y: 4; color: settingsPage.textSecondary; font.pixelSize: 22; text: "Border" }
 
@@ -274,7 +276,7 @@ Rectangle {
         }
 
         Rectangle {
-            x: 580; y: 36; width: 220; height: 44
+            x: 680; y: 36; width: 220; height: 44
             color: settingsPage.fieldFill; border.color: previewBorder; border.width: 1
             TextInput {
                 id: borderHex
@@ -296,17 +298,17 @@ Rectangle {
         }
 
         Rectangle {
-            x: 820; y: 36; width: 44; height: 44; radius: 4
+            x: 920; y: 36; width: 44; height: 44; radius: 4
             color: previewBorder
             border.color: "#FFFFFF"; border.width: 1
         }
     }
 
     Item {
-        id: backgroundRow
-        x: 80; y: 774; width: 1760; height: 88
+        id: settingsBackgroundRow
+        x: 80; y: 726; width: 1760; height: 88
 
-        Text { x: 0; y: 4; color: settingsPage.textSecondary; font.pixelSize: 22; text: "Background" }
+        Text { x: 0; y: 4; color: settingsPage.textSecondary; font.pixelSize: 22; text: "Settings background" }
 
         Row {
             x: 0; y: 36; spacing: 12
@@ -316,46 +318,98 @@ Rectangle {
                     width: 44; height: 44; radius: 4
                     color: modelData
                     border.color: "#FFFFFF"
-                    border.width: previewBackground.toLowerCase() === modelData.toLowerCase() ? 3 : 0
+                    border.width: previewSettingsBackground.toLowerCase() === modelData.toLowerCase() ? 3 : 0
                     MouseArea {
                         anchors.fill: parent
-                        onClicked: { previewBackground = modelData; backgroundHex.text = modelData }
+                        onClicked: { previewSettingsBackground = modelData; settingsBackgroundHex.text = modelData }
                     }
                 }
             }
         }
 
         Rectangle {
-            x: 580; y: 36; width: 220; height: 44
+            x: 680; y: 36; width: 220; height: 44
             color: settingsPage.fieldFill; border.color: previewBorder; border.width: 1
             TextInput {
-                id: backgroundHex
+                id: settingsBackgroundHex
                 anchors.fill: parent; anchors.margins: 8
                 color: settingsPage.textPrimary; font.pixelSize: 22; selectionColor: previewAccent
-                text: previewBackground
+                text: previewSettingsBackground
                 onEditingFinished: {
                     var n = AppSettings.normalizeHex(text)
                     if (n.length > 0) {
-                        previewBackground = n
+                        previewSettingsBackground = n
                         text = n
                         settingsPage.errorMessage = ""
                     } else {
                         settingsPage.errorMessage = "\"" + text + "\" is not a valid hex color."
-                        text = previewBackground
+                        text = previewSettingsBackground
                     }
                 }
             }
         }
 
         Rectangle {
-            x: 820; y: 36; width: 44; height: 44; radius: 4
-            color: previewBackground
+            x: 920; y: 36; width: 44; height: 44; radius: 4
+            color: previewSettingsBackground
+            border.color: "#FFFFFF"; border.width: 1
+        }
+    }
+
+    Item {
+        id: dashboardBackgroundRow
+        x: 80; y: 806; width: 1760; height: 88
+
+        Text { x: 0; y: 4; color: settingsPage.textSecondary; font.pixelSize: 22; text: "Dashboard background" }
+
+        Row {
+            x: 0; y: 36; spacing: 12
+            Repeater {
+                model: backgroundSwatches
+                Rectangle {
+                    width: 44; height: 44; radius: 4
+                    color: modelData
+                    border.color: "#FFFFFF"
+                    border.width: previewDashboardBackground.toLowerCase() === modelData.toLowerCase() ? 3 : 0
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: { previewDashboardBackground = modelData; dashboardBackgroundHex.text = modelData }
+                    }
+                }
+            }
+        }
+
+        Rectangle {
+            x: 680; y: 36; width: 220; height: 44
+            color: settingsPage.fieldFill; border.color: previewBorder; border.width: 1
+            TextInput {
+                id: dashboardBackgroundHex
+                anchors.fill: parent; anchors.margins: 8
+                color: settingsPage.textPrimary; font.pixelSize: 22; selectionColor: previewAccent
+                text: previewDashboardBackground
+                onEditingFinished: {
+                    var n = AppSettings.normalizeHex(text)
+                    if (n.length > 0) {
+                        previewDashboardBackground = n
+                        text = n
+                        settingsPage.errorMessage = ""
+                    } else {
+                        settingsPage.errorMessage = "\"" + text + "\" is not a valid hex color."
+                        text = previewDashboardBackground
+                    }
+                }
+            }
+        }
+
+        Rectangle {
+            x: 920; y: 36; width: 44; height: 44; radius: 4
+            color: previewDashboardBackground
             border.color: "#FFFFFF"; border.width: 1
         }
     }
 
     Text {
-        x: 80; y: 890
+        x: 80; y: 910
         color: "#F74C4C"
         font.pixelSize: 22
         text: settingsPage.errorMessage
@@ -376,7 +430,8 @@ Rectangle {
                     AppSettings.setGamesLibraryPath(previewLibPath)
                     AppSettings.setAccentColor(previewAccent)
                     AppSettings.setBorderColor(previewBorder)
-                    AppSettings.setBackgroundColor(previewBackground)
+                    AppSettings.setSettingsBackgroundColor(previewSettingsBackground)
+                    AppSettings.setDashboardBackgroundColor(previewDashboardBackground)
                     var err = AppSettings.apply()
                     if (err.length > 0) {
                         settingsPage.errorMessage = err
@@ -415,7 +470,8 @@ Rectangle {
                     libPathInput.text = previewLibPath
                     accentHex.text = previewAccent
                     borderHex.text = previewBorder
-                    backgroundHex.text = previewBackground
+                    settingsBackgroundHex.text = previewSettingsBackground
+                    dashboardBackgroundHex.text = previewDashboardBackground
                     settingsPage.errorMessage = ""
                 }
             }
