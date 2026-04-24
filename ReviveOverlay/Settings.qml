@@ -4,7 +4,7 @@ import QtQuick.Dialogs 1.3
 Rectangle {
     id: settingsPage
     anchors.fill: parent
-    color: "#0E1A2B"
+    color: previewBackground
 
     signal closed()
 
@@ -64,7 +64,7 @@ Rectangle {
 
     property var accentSwatches: [
         "#F74C4C", "#F79C4C", "#F7F04C", "#4CF77C",
-        "#1CC4F7", "#1C7AF7", "#7C1CF7", "#F71CA8", "#1CC4F7"
+        "#1CC4F7", "#1C7AF7", "#7C1CF7", "#F71CA8"
     ]
     property var borderSwatches: [
         "#FFFFFF", "#E4E4E4", "#B4DFF7",
