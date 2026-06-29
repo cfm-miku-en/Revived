@@ -1,3 +1,4 @@
+## about the 2 months with no commit: I have been unable to ship Revived for 2 months due to GitHub flagging my account. The new version will be shipped once I can get it lifed
 # Revived Compatibility Layer
 A fork of Revive meant to fix most issues in Revive, and to add some features. Wikis in this readme point to LibreVR's, it is not obsolete. (yet)
 
