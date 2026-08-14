@@ -1,4 +1,4 @@
-7/10/2026 - I am not going to be active on most of my projects here since it appears nobody cares about my work, so why should I be working on things that'll never be used? until something changes and my projects stop being meaningless, I am taking a break from the Revived project.
+8/13/2026 - im back or sum i need to finish my other projects before i get back on revived
 # Revived Compatibility Layer
 A fork of Revive meant to fix most issues in Revive, and to add some features. Wikis in this readme point to LibreVR's, it is not obsolete. (yet)
 
