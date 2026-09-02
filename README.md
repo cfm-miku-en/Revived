@@ -1,4 +1,4 @@
-8/13/2026 - im back or sum i need to finish my other projects before i get back on revived
+## THANKS FOR THE STARS! Use the issues tab to suggest features or fixes.
 # Revived Compatibility Layer
 A fork of Revive meant to fix most issues in Revive, and to add some features. Wikis in this readme point to LibreVR's, it is not obsolete. (yet)
 
