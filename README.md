@@ -1,4 +1,4 @@
-## THANKS FOR THE STARS! Use the issues tab to suggest features or fixes.
+## Use the issues tab to suggest features or fixes. I do not know what to fix or add right now.
 # Revived Compatibility Layer
 A fork of Revive meant to fix most issues in Revive, and to add some features. Wikis in this readme point to LibreVR's, it is not obsolete. (yet)
 
