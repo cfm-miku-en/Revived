@@ -234,16 +234,10 @@ QString CReviveManifestController::DetectDefaultLibraryPath()
 
 CReviveManifestController::CReviveManifestController()
 	: BaseClass()
-	, m_appFile(QCoreApplication::applicationDirPath() + "/app.vrmanifest")
 	, m_manifestFile(QCoreApplication::applicationDirPath() + "/revive.vrmanifest")
-	, m_supportFile(QCoreApplication::applicationDirPath() + "/support.vrmanifest")
 	, m_bLibraryFound(false)
 	, m_bUseOpenXR(false)
 {
-	m_supportArgs["revive.app.oculus-dreamdeck-nux"] = R"(/base Support\oculus-dreamdeck-nux\Dreamdeck\Binaries\Win64\Dreamdeck-Win64-Shipping.exe -vr -dreamdeck=NUX)";
-	m_supportArgs["revive.app.oculus-touch-tutorial"] = R"(/base Support\oculus-touch-tutorial\WindowsNoEditor\TouchNUX\Binaries\Win64\TouchNUX-Win64-Shipping.exe -gamemode=nux)";
-	m_supportArgs["revive.app.oculus-first-contact"] = R"(/base Support\oculus-touch-tutorial\WindowsNoEditor\TouchNUX\Binaries\Win64\TouchNUX-Win64-Shipping.exe -gamemode="experienceonly")";
-	m_supportArgs["revive.app.oculus-worlds"] = R"(/base Support/oculus-worlds/Home2/Binaries/Win64/Home2-Win64-Shipping.exe)";
 }
 
 CReviveManifestController::~CReviveManifestController()
@@ -265,7 +259,6 @@ bool CReviveManifestController::Init()
 #ifndef DEBUG
 	// Add application and support manifest
 	AddApplicationManifest(m_appFile);
-	AddApplicationManifest(m_supportFile);
 #endif
 
 	// Ensure the auto-launch flag is set
@@ -440,15 +433,6 @@ bool CReviveManifestController::LaunchInjector(const QString& args)
 		return false;
 	return injector.exitCode() == 0;
 }
-
-bool CReviveManifestController::LaunchSupportApp(const QString& appKey)
-{
-	if (!m_supportArgs.contains(appKey))
-		return false;
-
-	return LaunchInjector(m_supportArgs[appKey]);
-}
-
 bool CReviveManifestController::launchApplication(const QString &canonicalName)
 {
 	qDebug("Launching application: %s", qUtf8Printable(canonicalName));
@@ -470,8 +454,6 @@ bool CReviveManifestController::launchApplication(const QString &canonicalName)
 			qWarning("Failed to launch application through OpenVR, falling back to injector: %s (%s)", qUtf8Printable(appKey), vr::VRApplications()->GetApplicationsErrorNameFromEnum(error));
 	}
 
-	if (LaunchSupportApp(appKey))
-		return true;
 
 	// Search for the app in the cached manifest
 	for (QJsonValue app : m_manifest["applications"].toArray())

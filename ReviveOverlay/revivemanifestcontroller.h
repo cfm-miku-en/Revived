@@ -61,15 +61,11 @@ private:
 	bool GetDefaultLibraryPath(wchar_t* path, uint32_t length);
 	bool GetLibraries(QStringList &id_array, QStringList & path_array);
 	bool AddApplicationManifest(QFile& file);
-	bool LaunchSupportApp(const QString& appKey);
 
 	QFile m_appFile;
 	QFile m_manifestFile;
-	QFile m_supportFile;
 	QDir m_appManifests;
 	QJsonObject m_manifest;
-	QMap<QString, QString> m_supportArgs;
-
 	bool m_bLibraryFound;
 	QString m_strLibraryURL;
 	QString m_strLibraryPath;

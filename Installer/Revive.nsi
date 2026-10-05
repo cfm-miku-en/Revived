@@ -169,7 +169,6 @@ install:
   File "..\LICENSE"
   File "..\hook.cmd"
   File "${DASH_DIR}\app.vrmanifest"
-  File "${DASH_DIR}\support.vrmanifest"
   File /r "${BASE_DIR}\*.exe"
   File /r /x "${BASE_DIR}\bearer" "${BASE_DIR}\*.dll"
   File /r "${BASE_DIR}\Qt*"
