@@ -332,6 +332,11 @@ int wmain(int argc, wchar_t *argv[]) {
 		{
 			dlls.add(moduleDir + std::string("\\LibReviveXR64.dll"));
 		}
+		else if (wcscmp(argv[i], L"/openvr") == 0)
+		{
+			dlls.add(moduleDir + std::string("\\openvr_api64.dll"));
+			dlls.add(moduleDir + std::string("\\LibRevive64.dll"));
+		}
 		else if (wcscmp(argv[i], L"/proxy") == 0)
 		{
 			dlls.add(moduleDir + std::string("\\LibOVRProxy64.dll"));
@@ -377,7 +382,9 @@ int wmain(int argc, wchar_t *argv[]) {
 
 	if (dlls.empty())
 	{
-		bool useXR = runtimePref.empty() ? IsOpenXRRuntimeInstalled() : preferOpenXR;
+		bool useXR = (runtimePref == REV_RUNTIME_OPENXR) ? true :
+		             (runtimePref == REV_RUNTIME_OPENVR) ? false :
+		             IsOpenXRRuntimeInstalled();
 		if (useXR)
 		{
 			dlls.add(moduleDir + std::string("\\LibReviveXR64.dll"));

@@ -433,7 +433,7 @@ bool CReviveManifestController::LaunchInjector(const QString& args)
 	if (m_bUseOpenXR)
 		injector.setNativeArguments("/openxr " + args);
 	else
-		injector.setNativeArguments(args);
+		injector.setNativeArguments("/openvr " + args);
 	injector.start();
 
 	if (!injector.waitForFinished())
