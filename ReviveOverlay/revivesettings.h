@@ -14,3 +14,4 @@
 
 #define REV_RUNTIME_OPENVR    L"OpenVR"
 #define REV_RUNTIME_OPENXR    L"OpenXR"
+#define REV_SETTING_FALLBACK  L"FallbackToOpenVR"

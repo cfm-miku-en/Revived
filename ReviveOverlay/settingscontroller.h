@@ -10,6 +10,7 @@ class CSettingsController : public QObject
 	typedef QObject BaseClass;
 
 	Q_PROPERTY(int runtimePreference READ runtimePreference WRITE setRuntimePreference NOTIFY settingsChanged)
+	Q_PROPERTY(bool fallbackToOpenVR READ fallbackToOpenVR WRITE setFallbackToOpenVR NOTIFY settingsChanged)
 	Q_PROPERTY(QString metaHorizonPath READ metaHorizonPath WRITE setMetaHorizonPath NOTIFY settingsChanged)
 	Q_PROPERTY(QString gamesLibraryPath READ gamesLibraryPath WRITE setGamesLibraryPath NOTIFY settingsChanged)
 	Q_PROPERTY(QString accentColor READ accentColor WRITE setAccentColor NOTIFY settingsChanged)
@@ -30,6 +31,7 @@ public:
 	QString borderColor() const { return m_borderColor; }
 	QString settingsBackgroundColor() const { return m_settingsBackgroundColor; }
 	QString dashboardBackgroundColor() const { return m_dashboardBackgroundColor; }
+	bool fallbackToOpenVR() const { return m_fallbackToOpenVR; }
 
 	Q_INVOKABLE void setRuntimePreference(int value) { m_runtime = value; }
 	Q_INVOKABLE void setMetaHorizonPath(const QString &path) { m_metaHorizonPath = path; }
@@ -38,6 +40,7 @@ public:
 	Q_INVOKABLE void setBorderColor(const QString &color) { m_borderColor = color; }
 	Q_INVOKABLE void setSettingsBackgroundColor(const QString &color) { m_settingsBackgroundColor = color; }
 	Q_INVOKABLE void setDashboardBackgroundColor(const QString &color) { m_dashboardBackgroundColor = color; }
+	Q_INVOKABLE void setFallbackToOpenVR(bool value) { m_fallbackToOpenVR = value; }
 
 	Q_INVOKABLE QString apply();
 	Q_INVOKABLE void cancel();
@@ -61,6 +64,7 @@ private:
 	QString m_borderColor;
 	QString m_settingsBackgroundColor;
 	QString m_dashboardBackgroundColor;
+	bool m_fallbackToOpenVR;
 };
 
 #endif // SETTINGSCONTROLLER_H

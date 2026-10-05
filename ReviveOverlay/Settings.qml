@@ -52,6 +52,7 @@ Rectangle {
     property string errorMessage: ""
 
     property string previewRuntime:             AppSettings.runtimePreference === 1 ? "OpenXR" : "OpenVR"
+    property bool previewFallback:              AppSettings.fallbackToOpenVR
     property string previewMetaPath:            AppSettings.metaHorizonPath.length > 0 ? AppSettings.metaHorizonPath : AppSettings.detectedMetaHorizonPath()
     property string previewLibPath:             AppSettings.gamesLibraryPath.length > 0 ? AppSettings.gamesLibraryPath : AppSettings.detectedGamesLibraryPath()
     property string previewAccent:              AppSettings.accentColor
@@ -78,6 +79,7 @@ Rectangle {
 
     function syncPreviewsFromController() {
         previewRuntime             = AppSettings.runtimePreference === 1 ? "OpenXR" : "OpenVR"
+        previewFallback            = AppSettings.fallbackToOpenVR
         previewMetaPath            = AppSettings.metaHorizonPath.length > 0 ? AppSettings.metaHorizonPath : AppSettings.detectedMetaHorizonPath()
         previewLibPath             = AppSettings.gamesLibraryPath.length > 0 ? AppSettings.gamesLibraryPath : AppSettings.detectedGamesLibraryPath()
         previewAccent              = AppSettings.accentColor
@@ -101,40 +103,66 @@ Rectangle {
     }
 
     Row {
-        x: 80; y: 176; spacing: 16
-        Rectangle {
-            width: 32; height: 32; radius: 16
-            border.color: previewAccent; border.width: 3; color: "transparent"
+        x: 80; y: 176; spacing: 48
+        Row {
+            spacing: 16
             Rectangle {
-                width: 18; height: 18; radius: 9
-                anchors.centerIn: parent
-                color: previewAccent
-                visible: previewRuntime === "OpenVR"
+                width: 32; height: 32; radius: 16
+                border.color: previewAccent; border.width: 3; color: "transparent"
+                Rectangle {
+                    width: 18; height: 18; radius: 9
+                    anchors.centerIn: parent
+                    color: previewAccent
+                    visible: previewRuntime === "OpenVR"
+                }
+                MouseArea { anchors.fill: parent; onClicked: previewRuntime = "OpenVR" }
             }
-            MouseArea { anchors.fill: parent; onClicked: previewRuntime = "OpenVR" }
+            Text {
+                text: "OpenVR"; color: settingsPage.textPrimary; font.pixelSize: 26
+                anchors.verticalCenter: parent.verticalCenter
+                MouseArea { anchors.fill: parent; onClicked: previewRuntime = "OpenVR" }
+            }
         }
-        Text {
-            text: "OpenVR"; color: settingsPage.textPrimary; font.pixelSize: 26
-            anchors.verticalCenter: parent.verticalCenter
+        Row {
+            spacing: 16
+            Rectangle {
+                width: 32; height: 32; radius: 16
+                border.color: previewAccent; border.width: 3; color: "transparent"
+                Rectangle {
+                    width: 18; height: 18; radius: 9
+                    anchors.centerIn: parent
+                    color: previewAccent
+                    visible: previewRuntime === "OpenXR"
+                }
+                MouseArea { anchors.fill: parent; onClicked: previewRuntime = "OpenXR" }
+            }
+            Text {
+                text: "OpenXR"; color: settingsPage.textPrimary; font.pixelSize: 26
+                anchors.verticalCenter: parent.verticalCenter
+                MouseArea { anchors.fill: parent; onClicked: previewRuntime = "OpenXR" }
+            }
         }
     }
 
     Row {
-        x: 80; y: 224; spacing: 16
+        x: 80; y: 228; spacing: 16
+        visible: previewRuntime === "OpenXR"
         Rectangle {
-            width: 32; height: 32; radius: 16
+            width: 32; height: 32; radius: 6
             border.color: previewAccent; border.width: 3; color: "transparent"
             Rectangle {
-                width: 18; height: 18; radius: 9
+                width: 18; height: 18; radius: 3
                 anchors.centerIn: parent
                 color: previewAccent
-                visible: previewRuntime === "OpenXR"
+                visible: previewFallback
             }
-            MouseArea { anchors.fill: parent; onClicked: previewRuntime = "OpenXR" }
+            MouseArea { anchors.fill: parent; onClicked: previewFallback = !previewFallback }
         }
         Text {
-            text: "OpenXR"; color: settingsPage.textPrimary; font.pixelSize: 26
+            text: "Fallback to OpenVR if OpenXR fails to launch"
+            color: settingsPage.textPrimary; font.pixelSize: 26
             anchors.verticalCenter: parent.verticalCenter
+            MouseArea { anchors.fill: parent; onClicked: previewFallback = !previewFallback }
         }
     }
 
@@ -426,6 +454,7 @@ Rectangle {
                 anchors.fill: parent
                 onClicked: {
                     AppSettings.setRuntimePreference(previewRuntime === "OpenXR" ? 1 : 0)
+                    AppSettings.setFallbackToOpenVR(previewFallback)
                     AppSettings.setMetaHorizonPath(previewMetaPath)
                     AppSettings.setGamesLibraryPath(previewLibPath)
                     AppSettings.setAccentColor(previewAccent)

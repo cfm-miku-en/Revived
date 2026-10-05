@@ -49,6 +49,7 @@ void CSettingsController::load()
 	QSettings reg(QStringLiteral("HKEY_CURRENT_USER\\Software\\Revived"), QSettings::NativeFormat);
 	QString runtime = reg.value(QStringLiteral("RuntimePreference")).toString();
 	m_runtime = (runtime == QStringLiteral("OpenXR")) ? OpenXR : OpenVR;
+	m_fallbackToOpenVR = reg.value(QStringLiteral("FallbackToOpenVR"), true).toBool();
 	m_metaHorizonPath = reg.value(QStringLiteral("MetaHorizonPath")).toString();
 	m_gamesLibraryPath = reg.value(QStringLiteral("GamesLibraryPath")).toString();
 	m_accentColor = coerceColor(reg.value(QStringLiteral("AccentColor")).toString(), kDefaultAccent);
@@ -87,8 +88,8 @@ QString CSettingsController::apply()
 
 	QSettings reg(QStringLiteral("HKEY_CURRENT_USER\\Software\\Revived"), QSettings::NativeFormat);
 	reg.setValue(QStringLiteral("RuntimePreference"), m_runtime == OpenXR ? QStringLiteral("OpenXR") : QStringLiteral("OpenVR"));
+	reg.setValue(QStringLiteral("FallbackToOpenVR"), m_fallbackToOpenVR);
 	reg.setValue(QStringLiteral("MetaHorizonPath"), m_metaHorizonPath);
-	reg.setValue(QStringLiteral("GamesLibraryPath"), m_gamesLibraryPath);
 	reg.setValue(QStringLiteral("AccentColor"), m_accentColor);
 	reg.setValue(QStringLiteral("BorderColor"), m_borderColor);
 	reg.setValue(QStringLiteral("SettingsBackgroundColor"), m_settingsBackgroundColor);
@@ -108,6 +109,7 @@ void CSettingsController::restoreDefaults()
 {
 	QSettings reg(QStringLiteral("HKEY_CURRENT_USER\\Software\\Revived"), QSettings::NativeFormat);
 	reg.remove(QStringLiteral("RuntimePreference"));
+	reg.remove(QStringLiteral("FallbackToOpenVR"));
 	reg.remove(QStringLiteral("MetaHorizonPath"));
 	reg.remove(QStringLiteral("GamesLibraryPath"));
 	reg.remove(QStringLiteral("AccentColor"));
@@ -116,8 +118,8 @@ void CSettingsController::restoreDefaults()
 	reg.remove(QStringLiteral("DashboardBackgroundColor"));
 
 	m_runtime = OpenVR;
+	m_fallbackToOpenVR = true;
 	m_metaHorizonPath.clear();
-	m_gamesLibraryPath.clear();
 	m_accentColor = kDefaultAccent;
 	m_borderColor = kDefaultBorder;
 	m_settingsBackgroundColor = kDefaultSettingsBackground;

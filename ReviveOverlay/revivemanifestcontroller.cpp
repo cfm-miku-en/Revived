@@ -433,13 +433,27 @@ bool CReviveManifestController::LaunchInjector(const QString& args)
 	if (m_bUseOpenXR)
 		injector.setNativeArguments("/openxr " + args);
 	else
-		injector.setNativeArguments(args);
+		injector.setNativeArguments("/openvr " + args);
 	injector.start();
 
-	if (!injector.waitForFinished())
+	if (!injector.waitForFinished() || injector.exitCode() != 0)
+	{
+		QSettings revSettings(QStringLiteral("HKEY_CURRENT_USER\\Software\\Revived"), QSettings::NativeFormat);
+		bool fallback = revSettings.value(QStringLiteral("FallbackToOpenVR"), true).toBool();
+		if (m_bUseOpenXR && fallback)
+		{
+			qWarning("OpenXR launch failed (exit code %d), falling back to OpenVR...", injector.exitCode());
+			QProcess fallbackInjector;
+			fallbackInjector.setProgram(QCoreApplication::applicationDirPath() + "/ReviveInjector.exe");
+			fallbackInjector.setNativeArguments("/openvr " + args);
+			fallbackInjector.start();
+			if (!fallbackInjector.waitForFinished())
+				return false;
+			return fallbackInjector.exitCode() == 0;
+		}
 		return false;
+	}
 	return injector.exitCode() == 0;
-}
 
 bool CReviveManifestController::LaunchSupportApp(const QString& appKey)
 {

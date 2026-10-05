@@ -332,6 +332,11 @@ int wmain(int argc, wchar_t *argv[]) {
 		{
 			dlls.add(moduleDir + std::string("\\LibReviveXR64.dll"));
 		}
+		else if (wcscmp(argv[i], L"/openvr") == 0)
+		{
+			dlls.add(moduleDir + std::string("\\openvr_api64.dll"));
+			dlls.add(moduleDir + std::string("\\LibRevive64.dll"));
+		}
 		else if (wcscmp(argv[i], L"/proxy") == 0)
 		{
 			dlls.add(moduleDir + std::string("\\LibOVRProxy64.dll"));
