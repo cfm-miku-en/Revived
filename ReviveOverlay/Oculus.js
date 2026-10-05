@@ -31,28 +31,28 @@ function createObjects() {
     }
 }
 
-function generateManifest(manifest, library) {
-    console.log("Generating manifest for " + manifest["canonicalName"]);
-    var launch = manifest["launchFile"];
-
-    // Find the true executable for Unreal Engine games
-    var shipping = /-Shipping.exe$/i;
-    var binaries = /Binaries(\\|\/)Win64(\\|\/)(.*)\.exe/i;
+function getLaunchFile(manifest) {
+    var launch = manifest["launchFile"] || "";
+    var shipping = /Binaries(\\|\/)Win64(\\|\/).*-Shipping\.exe$/i;
     for (var file in manifest["files"]) {
-        // Check if the executable is in the binaries folder
-        if (binaries.test(file)) {
+        if (shipping.test(file)) {
             launch = file;
-
-            // If we found the shipping executable we can immediately stop looking
-            if (shipping.test(file))
-                break;
+            break;
         }
     }
+    return launch.replace(/\//g, '\\');
+}
 
-    // Replace the forward slashes with backslashes as used by Windows
-    // TODO: Move this to the injector
-    launch = launch.replace(/\//g, '\\');
+function getFullLaunchPath(manifest, library) {
+    var relLaunch = getLaunchFile(manifest);
+    if (!relLaunch)
+        return "";
+    return Revive.Libraries[library] + "Software\\" + manifest["canonicalName"] + "\\" + relLaunch;
+}
 
+function generateManifest(manifest, library) {
+    console.log("Generating manifest for " + manifest["canonicalName"]);
+    var launch = getLaunchFile(manifest);
     var parameters = "";
     if (manifest["launchParameters"] != "" && manifest["launchParameters"] != "None" && manifest["launchParameters"] != null)
         parameters = " " + manifest["launchParameters"];
@@ -145,6 +145,14 @@ function loadManifest(manifestURL, library) {
             // Add the application manifest to the Revive manifest and include their cover.
             if (manifest["packageType"] == "APP" && !manifest["isCore"] && !manifest["thirdParty"]) {
                 console.log("Found application " + manifest["canonicalName"]);
+                var fullLaunchPath = getFullLaunchPath(manifest, library);
+                if (!Revive.fileExists(fullLaunchPath)) {
+                    console.log("Skipping " + manifest["canonicalName"] + " because executable was not found on disk: " + fullLaunchPath);
+                    if (Revive.isApplicationInstalled(manifest["canonicalName"]))
+                        Revive.removeManifest(manifest["canonicalName"]);
+                    return;
+                }
+
                 var cover = Revive.BaseURL + "CoreData/Software/StoreAssets/" + manifest["canonicalName"] + "_assets/cover_square_image.jpg";
                 coverModel.append({coverURL: cover, libraryId: library, appKey: manifest["canonicalName"], appId: manifest["appId"]});
                 if (!Revive.isApplicationInstalled(manifest["canonicalName"]))

@@ -50,6 +50,7 @@ public:
 	Q_INVOKABLE bool removeManifest(const QString &canonicalName);
 	Q_INVOKABLE bool launchApplication(const QString &canonicalName);
 	Q_INVOKABLE bool isApplicationInstalled(const QString &canonicalName);
+	Q_INVOKABLE bool fileExists(const QString &path);
 
 signals:
 	void LibraryChanged();

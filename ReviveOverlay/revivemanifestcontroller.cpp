@@ -495,3 +495,8 @@ bool CReviveManifestController::isApplicationInstalled(const QString &canonicalN
 	}
 	return false;
 }
+
+bool CReviveManifestController::fileExists(const QString &path)
+{
+	return QFile::exists(path);
+}
