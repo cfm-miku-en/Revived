@@ -13,6 +13,7 @@
 #include <detours/detours.h>
 #include "../ReviveOverlay/version.h"
 #include "../ReviveOverlay/revivesettings.h"
+#include "../ReviveOverlay/pathutils.h"
 
 extern FILE* g_LogFile;
 #define LOG(x, ...) if (g_LogFile) fprintf(g_LogFile, x, __VA_ARGS__); \
@@ -112,14 +113,8 @@ bool GetLibraryPath(PWCHAR path, DWORD length, PWCHAR guid)
 		return false;
 	}
 
-	// Resolve the volume path to a mount point
-	DWORD total;
-	WCHAR volume[50] = { L'\0' };
-	wcsncpy(volume, volumePath, 49);
-	GetVolumePathNamesForVolumeNameW(volume, path, length, &total);
-	wcsncat(path, volumePath + 49, MAX_PATH);
+	ResolveOculusVolumePath(volumePath, path, length);
 	free(volumePath);
-
 	return true;
 }
 
@@ -148,37 +143,7 @@ bool GetDefaultLibraryPath(PWCHAR path, DWORD length)
 		return false;
 	}
 
-	// Open the default library key
-	wcsncat(keyPath, guid, MAX_PATH);
-	error = RegOpenKeyExW(HKEY_CURRENT_USER, keyPath, 0, KEY_READ, &oculusKey);
-	if (error != ERROR_SUCCESS)
-	{
-		LOG("Unable to open Library path key.");
-		return false;
-	}
-
-	// Get the volume path to this library
-	DWORD pathSize;
-	error = RegQueryValueExW(oculusKey, L"Path", NULL, NULL, NULL, &pathSize);
-	PWCHAR volumePath = (PWCHAR)malloc(pathSize);
-	error = RegQueryValueExW(oculusKey, L"Path", NULL, NULL, (PBYTE)volumePath, &pathSize);
-	RegCloseKey(oculusKey);
-	if (error != ERROR_SUCCESS)
-	{
-		free(volumePath);
-		LOG("Unable to read Library path.");
-		return false;
-	}
-
-	// Resolve the volume path to a mount point
-	DWORD total;
-	WCHAR volume[50] = { L'\0' };
-	wcsncpy(volume, volumePath, 49);
-	GetVolumePathNamesForVolumeNameW(volume, path, length, &total);
-	wcsncat(path, volumePath + 49, MAX_PATH);
-	free(volumePath);
-
-	return true;
+	return GetLibraryPath(path, length, guid);
 }
 
 static std::wstring RegReadSZ(HKEY root, LPCWSTR subkey, LPCWSTR value, DWORD flags = KEY_READ)

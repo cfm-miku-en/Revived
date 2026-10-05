@@ -4,6 +4,7 @@
 #include "oculusoauthtokencontroller.h"
 #include "openvr.h"
 #include "OVR_CAPI_Keys.h"
+#include "pathutils.h"
 #include <qt_windows.h>
 
 #include <QCoreApplication>
@@ -61,14 +62,8 @@ bool GetLibraryPath(PWCHAR path, DWORD length, PWCHAR guid)
 		return false;
 	}
 
-	// Resolve the volume path to a mount point
-	DWORD total;
-	WCHAR volume[50] = { L'\0' };
-	wcsncpy(volume, volumePath, 49);
-	GetVolumePathNamesForVolumeNameW(volume, path, length, &total);
-	wcsncat(path, volumePath + 49, MAX_PATH);
+	ResolveOculusVolumePath(volumePath, path, length);
 	free(volumePath);
-
 	return true;
 }
 
